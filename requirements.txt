@@ -1,0 +1,4 @@
+nbinteract
+numpy
+scipy
+matplotlib
