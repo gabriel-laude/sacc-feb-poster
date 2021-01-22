@@ -13112,89 +13112,6 @@ div#notebook {
 
 
 
-
-  
-
-  <div class="
-      cell border-box-sizing code_cell rendered">
-    <div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># This is a cell to hide code snippets from displaying</span>
-<span class="c1"># This must be at first cell!</span>
-
-<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
-
-<span class="n">hide_me</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-<span class="n">HTML</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;&lt;script&gt;</span>
-<span class="s1">code_show=true; </span>
-<span class="s1">function code_toggle() {</span>
-<span class="s1">  if (code_show) {</span>
-<span class="s1">    $(&#39;div.input&#39;).each(function(id) {</span>
-<span class="s1">      el = $(this).find(&#39;.cm-variable:first&#39;);</span>
-<span class="s1">      if (id == 0 || el.text() == &#39;hide_me&#39;) {</span>
-<span class="s1">        $(this).hide();</span>
-<span class="s1">      }</span>
-<span class="s1">    });</span>
-<span class="s1">    $(&#39;div.output_prompt&#39;).css(&#39;opacity&#39;, 0);</span>
-<span class="s1">  } else {</span>
-<span class="s1">    $(&#39;div.input&#39;).each(function(id) {</span>
-<span class="s1">      $(this).show();</span>
-<span class="s1">    });</span>
-<span class="s1">    $(&#39;div.output_prompt&#39;).css(&#39;opacity&#39;, 1);</span>
-<span class="s1">  }</span>
-<span class="s1">  code_show = !code_show</span>
-<span class="s1">} </span>
-<span class="s1">$( document ).ready(code_toggle);</span>
-<span class="s1">&lt;/script&gt;</span>
-<span class="s1">&lt;form action=&quot;javascript:code_toggle()&quot;&gt;&lt;input style=&quot;opacity:0&quot; type=&quot;submit&quot; value=&quot;Click here to toggle on/off the raw code.&quot;&gt;&lt;/form&gt;&#39;&#39;&#39;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    
-
-
-<div class="output_html rendered_html output_subarea output_execute_result">
-<script>
-code_show=true; 
-function code_toggle() {
-  if (code_show) {
-    $('div.input').each(function(id) {
-      el = $(this).find('.cm-variable:first');
-      if (id == 0 || el.text() == 'hide_me') {
-        $(this).hide();
-      }
-    });
-    $('div.output_prompt').css('opacity', 0);
-  } else {
-    $('div.input').each(function(id) {
-      $(this).show();
-    });
-    $('div.output_prompt').css('opacity', 1);
-  }
-  code_show = !code_show
-} 
-$( document ).ready(code_toggle);
-</script>
-<form action="javascript:code_toggle()"><input style="opacity:0" type="submit" value="Click here to toggle on/off the raw code."></form>
-</div>
-
-</div>
-
-</div>
-</div>
-
-  </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Now we shall implement the Sqz PES (Nakamura, H., Mil'nikov, G. (2013). Quantum Mechanical Tunneling in Chemical Physics. Boca Raton: CRC Press, <a href="https://doi.org/10.1201/b14673">https://doi.org/10.1201/b14673</a>), where the PES is given by</p>
@@ -13214,8 +13131,7 @@ $( document ).ready(code_toggle);
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">hide_me</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy</span> <span class="c1"># will not be used, but just want to know availability</span>
 <span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">interact</span><span class="p">,</span> <span class="n">interactive</span><span class="p">,</span> <span class="n">fixed</span><span class="p">,</span> <span class="n">interact_manual</span>
