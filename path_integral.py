@@ -59,7 +59,7 @@ class adiabatic(Beads):
                 Beads.__init__(self, PES)
                 self.mass = mass
                 self.PES=PES 
-                self.omega0=np.sqrt(PES.hessian(PES.x0))
+                self.omega0=np.sqrt(linalg.eigvalsh(PES.hessian(PES.x0)))
                 self.f = f
 
         def beads(self, x, t):
