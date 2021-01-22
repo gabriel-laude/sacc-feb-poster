@@ -163,15 +163,15 @@ def printm(*args, **kwargs):
 #########################
 
 if __name__ == "__main__":
-	for i in range(25):
-		print(ordinal(i), end=' ')
-	print()
-	for i in range(99,125):
-		print(ordinal(i), end=' ')
-	print()
-	for i in range(1,11):
-		print(greek[i]+'mer', end=' ')
-	print()
+	#for i in range(25):
+    	#	print(ordinal(i), end=' ')
+	#print()
+	#for i in range(99,125):
+	#	print(ordinal(i), end=' ')
+	#print()
+	#for i in range(1,11):
+	#	print(greek[i]+'mer', end=' ')
+	#print()
 	print(share(17,5))
 	v = numpy.arange(6)
 	print(diagtensor(v))
