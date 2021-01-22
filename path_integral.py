@@ -68,17 +68,20 @@ class adiabatic(Beads):
                 return N, dt
 
         def f_trial(self, x, t):
+                """
+                f(x) = S + f_l + f_r
+                f_l, f_r are the harmonic oscillator contributions
+                """
                 f = self.f 
                 if self.f == 1:
-                    #omega0=np.sqrt(self.PES.hessian(x[0]))
-                    #print omega0
                     omega0 = self.omega0
                     return self.S(x, t) + 0.5*omega0*((x[0] - self.PES.x0)**2 + (x[-1] + self.PES.x0)**2) # correction for asymmetry required! 
         
                 if self.f > 1:
-                    x = x.reshape((len(x)/f,f))
+                    N=len(x)
+                    x = x.reshape((int(N/f),f))
                     S = self.S(x, t)
-                    xmin=np.array([-1,0]) # of course not always true!
+                    xmin=np.array([-1,0]) # hardcode for now
                     
                     # build X
                     evals_l=evals_r=linalg.eigvalsh(self.PES.hessian(xmin))
@@ -90,7 +93,7 @@ class adiabatic(Beads):
                     X_l[1,1]=omega0[1]
                     X_r=X_l
 
-                    # extra factors generate now!
+                    # generate f_l, f_r
                     x_i=x[0] - xmin
                     x_f=x[-1] + xmin
                     f_l = np.linalg.multi_dot([x_i.T, U_l, X_l, U_l.T, x_i])
@@ -102,7 +105,8 @@ class adiabatic(Beads):
 
         def df_trial(self, x, t):
                 f = self.f # pure laziness right here
-                x = x.reshape((len(x)/f,f))
+                N=len(x)
+                x = x.reshape((int(N/f),f))
                 res=self.dSdx(x, t)
                 xmin=np.array([-1,0])
                 N=len(x)
@@ -136,6 +140,23 @@ class adiabatic(Beads):
         
         def both_trial(self, x, t):
                 return self.f_trial(x, t), self.df_trial(x, t)
+        
+        def hess_trial(self, x, t):
+                if self.f == 2:
+                    evals_l, U_l=linalg.eigh(self.PES.hessian(xmin))
+                    evals_r, U_r=linalg.eigh(self.PES.hessian(-xmin))
+                    X_l=np.zeros((2,2))
+                    omega0=np.sqrt(evals_l)
+                    X_l[0,0]=omega0[0]
+                    X_l[1,1]=omega0[1]
+                    X_r=X_l
+                
+                #TODO: build Y
+                N=len(x)
+                Y=np.zeros((N*self.f, N*self.f))
+                A=self.d2Sdx2(x,t) + Y
+                return A
+        
         def T(self, x, dt):
                 """Return kinetic energy"""
                 return np.sum(self.mass*(x[1:] - x[:-1])**2)/(2*dt)

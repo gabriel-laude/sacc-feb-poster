@@ -56,7 +56,7 @@ class CreaghWhelan(object):
                 
                 return H
 
-        def plot(self, x=None, npts=100, show=True):
+        def plot(self, trajectory=None, npts=100, show=True):
                 x=np.linspace(-1.6, 1.6, npts)
                 y=np.linspace(-1.6, 1.6, npts)
                 V=np.empty((npts,npts))
@@ -70,6 +70,12 @@ class CreaghWhelan(object):
                 CS=ax.contour(X, Y, V.T, np.linspace(0,2,10))
                 ax.set_xbound(-2,2)
                 ax.set_ybound(-2.0,2.0)
+                
+                if trajectory is not None: # plot trajectories
+                    xt=np.array(trajectory)
+                    xt,yt=np.split(xt, 2, -1)
+                    #print(x.shape)
+                    plt.plot(xt, yt,'o-', ms=8)
 
                 if show: 
                     plt.show()
@@ -115,5 +121,6 @@ class AsymDW(object):
 
 ###############################
 # test potentials
-pes=CreaghWhelan(n=2, k=0.5, c=0.3, gamma=0.5, rotate=True)
-pes.plot()
+if __name__ == "__main__": 
+    pes=CreaghWhelan(n=2, k=0.5, c=0.3, gamma=0.5, rotate=True)
+    pes.plot(show=True)
