@@ -2,6 +2,7 @@ import numpy as np
 from scipy import linalg
 import quasinewton, path_integral
 from modules import information
+from matplotlib import pyplot as plt
 
 def optimiser(xguess, pes, beta, N, gtol=1e-8):
     f = len(xguess[0])
@@ -48,7 +49,47 @@ def splitting(x_opt, xmin, beta, pes, vib_ind=[0,0]):
     return 0
 
 
-if 1:
+
+def plot_instanton(N, beta, d=0): # for now d does nothing
+    beta=60
+    from potentials import CreaghWhelan
+    pes=CreaghWhelan(n=2, k=0.5, c=0.3, gamma=0., rotate=True)
+    f=2
+    N=int(N)
+    xmin=np.array([-1,0])
+    x_comp = np.linspace(xmin[0], -xmin[0], N)
+    y_comp = np.linspace(xmin[1], xmin[1], N)
+    xguess=np.zeros((N,f))
+    xguess[:,0]=x_comp
+    xguess[:,1]=y_comp
+    pes.x0=xmin
+    x_opt=optimiser(xguess, pes, beta, N)
+    
+    
+    pes.plot(trajectory=x_opt, show=False)
+    # generate splitting results and put into plot
+    data = [['(0,0)', '(1,0)', '(0,1)', '(1,1)', '(2,0)', '(0,2)'],
+            ['1','2','3', '4'],
+            [1,2,3]]
+    
+    columns=[r'$n_1,n_2$', r'$\theta_n^\mathrm{inst}$', r'$\Delta_n^\mathrm{inst}$', r'$\Delta_\mathrm{DVR}$' ]
+    
+    #rows=data[0][:2]
+    #cellText=[['1', '2', '3'], ['1', '2', '3']]
+    rows=data[0]
+    cellText=[data[1] for i in range(len(rows))]
+    
+    print(len(cellText))
+    table=plt.table(colLabels=columns, cellText=cellText,
+                    loc='right', bbox=[1.1, 0.0, 0.9, 1])
+    #plt.subplots_adjust(bottom=0.2)
+    #pes.plot(trajectory=x_opt, show=False)
+    
+
+
+
+
+if 0:
     from potentials import CreaghWhelan
     pes=CreaghWhelan(n=2, k=0.5, c=0.3, gamma=0.0, rotate=True)
     f=2
