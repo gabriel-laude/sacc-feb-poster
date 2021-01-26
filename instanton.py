@@ -84,11 +84,8 @@ def splitting(x_opt, xmin, beta, pes, vib_ind=[0,0]):
 
     if 1:
         ratio_parallel= xi[0] * xf[0] / (np.sqrt(Bl[0,-2]*Br[0,-2])*pes.hbar)
-        #print("zero quantity B inv: ", Bl[0,-2])
         ratio_perp=B[1,-1] / np.sqrt(Bl[1,-1] * Br[1,-1])
         ratio11=B[1,-1]*xi[0]*xf[0] / (pes.hbar*Bl[0,-2]*Bl[1,-1]) #+ 2*Bl[0,-1]**2)
-        #print("ratio 11, ratio perp: ", ratio11, ratio_perp, ratio_parallel)
-    #print("splittings: ", theta0*pes.hbar, pes.hbar*theta0*ratio_perp, pes.hbar*theta0*np.abs(ratio_parallel), pes.hbar*theta0*np.abs(ratio11), 0, 0)
     return theta0*pes.hbar, pes.hbar*theta0*ratio_perp, pes.hbar*theta0*np.abs(ratio_parallel), np.abs(ratio11)*theta0*pes.hbar, 0, 0
 
 
