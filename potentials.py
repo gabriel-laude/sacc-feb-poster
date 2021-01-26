@@ -57,8 +57,8 @@ class CreaghWhelan(object):
                 return H
 
         def plot(self, trajectory=None, npts=100, show=False):
-                x=np.linspace(-1.6, 1.6, npts)
-                y=np.linspace(-1.6, 1.6, npts)
+                x=np.linspace(-1.25, 1.25, npts)
+                y=np.linspace(-1.25, 1.25, npts)
                 V=np.empty((npts,npts))
                 for i in range(npts):
                     for j in range(npts):
@@ -69,15 +69,13 @@ class CreaghWhelan(object):
                 
                 X, Y=np.meshgrid(x, y)
                 CS=ax.contour(X, Y, V.T, np.linspace(0,2,10))
-                ax.set_xbound(-2,2)
-                ax.set_ybound(-2.0,2.0)
+                ax.set_xbound(-1.25,1.25)
+                ax.set_ybound(-1.25,1.25)
                 
                 if trajectory is not None: # plot trajectories
                     xt=np.array(trajectory)
-                    xt,yt=np.split(xt, 2, -1)
-                    #print(x.shape)
-                    #print('updated....again...')
-                    ax.plot(xt, yt,'o-', ms=8)
+                    #xt,yt=np.split(xt, 2, -1)
+                    ax.plot(xt[:,0], xt[:,1], 'o-', ms=8)
 
                 if show: 
                     plt.show()

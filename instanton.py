@@ -96,7 +96,7 @@ def plot_instanton(N, beta, d=0): # for now d does nothing
     pes.x0=xmin
     x_opt=optimiser(xguess, pes, beta, N)
     
-    pes.plot(trajectory=x_opt, show=False, npts=35)
+    pes.plot(trajectory=x_opt, show=False, npts=20)
     theta0, theta10, theta01, theta11, theta20, theta02 = splitting(x_opt, xmin, beta, pes)
     d00=d10=d01=d11=d20=d02=0
     
