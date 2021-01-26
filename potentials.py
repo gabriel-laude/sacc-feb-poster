@@ -56,7 +56,7 @@ class CreaghWhelan(object):
                 
                 return H
 
-        def plot(self, trajectory=None, npts=100, show=True):
+        def plot(self, trajectory=None, npts=100, show=False):
                 x=np.linspace(-1.6, 1.6, npts)
                 y=np.linspace(-1.6, 1.6, npts)
                 V=np.empty((npts,npts))
@@ -66,6 +66,7 @@ class CreaghWhelan(object):
 
                 # contour plot generation
                 ax=plt.gca()
+                
                 X, Y=np.meshgrid(x, y)
                 CS=ax.contour(X, Y, V.T, np.linspace(0,2,10))
                 ax.set_xbound(-2,2)
@@ -75,7 +76,8 @@ class CreaghWhelan(object):
                     xt=np.array(trajectory)
                     xt,yt=np.split(xt, 2, -1)
                     #print(x.shape)
-                    plt.plot(xt, yt,'o-', ms=8)
+                    #print('updated....again...')
+                    ax.plot(xt, yt,'o-', ms=8)
 
                 if show: 
                     plt.show()
