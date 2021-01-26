@@ -65,3 +65,25 @@
 
   </div>
 
+
+
+<!-- Loads nbinteract package -->
+<script src="https://unpkg.com/nbinteract-core" async></script>
+<script>
+  (function setupNbinteract() {
+    // If NbInteract hasn't loaded, wait one second and try again
+    if (window.NbInteract === undefined) {
+      setTimeout(setupNbinteract, 1000)
+      return
+    }
+
+    var interact = new window.NbInteract({
+      spec: 'gabriel-laude/sacc-feb-poster/master',
+      baseUrl: 'https://mybinder.org',
+      provider: 'gh',
+    })
+    interact.prepare()
+
+    window.interact = interact
+  })()
+</script>
