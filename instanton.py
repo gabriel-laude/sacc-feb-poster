@@ -96,7 +96,7 @@ def plot_instanton(N, beta, d=0): # for now d does nothing
     pes.x0=xmin
     x_opt=optimiser(xguess, pes, beta, N)
     
-    pes.plot(trajectory=x_opt, show=False)
+    pes.plot(trajectory=x_opt, show=False, npts=35)
     theta0, theta10, theta01, theta11, theta20, theta02 = splitting(x_opt, xmin, beta, pes)
     d00=d10=d01=d11=d20=d02=0
     
@@ -112,8 +112,11 @@ def plot_instanton(N, beta, d=0): # for now d does nothing
         data=np.array(data)
         data[:,-1] = ["2.47e-8", "3.45e-8", "4.06e-6", "5.05e-6", "3.22e-7"] 
     
-    table=plt.table(colLabels=columns, cellText=data,
-                    loc='right', bbox=[1.1, 0.0, 0.9, 1])
+    #table=plt.table(colLabels=columns, cellText=data,
+    #                loc='right', bbox=[1.1, 0.0, 0.9, 1])
+
+
+
 if 0:
     from potentials import CreaghWhelan
     pes=CreaghWhelan(n=2, k=0.5, c=0.3, gamma=0.0, rotate=True)
