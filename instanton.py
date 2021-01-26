@@ -4,7 +4,7 @@ import quasinewton, path_integral
 from modules import information
 from matplotlib import pyplot as plt
 
-def optimiser(xguess, pes, beta, N, gtol=1e-6):
+def optimiser(xguess, pes, beta, N, gtol=1e-8):
     f = len(xguess[0])
     if f == 2:
         oldN = len(xguess)
@@ -75,9 +75,18 @@ def splitting(x_opt, xmin, beta, pes, vib_ind=[0,0]):
     # linear instanton, so we make it far far simpler
     xi=x_opt[0] - pes.x0
     xf=x_opt[-1] + pes.x0
-    ratio_parallel=2*np.sqrt(alpha_left[1] * alpha_right[1]) * np.exp(beta*pes.hbar*omega_l[1]) * xi[0] * xf[0]
-    ratio_perp=2*np.sqrt(alpha_left[0] * alpha_right[0]) * np.exp(beta*pes.hbar*omega_l[0]) * B[1,-1] * pes.hbar
-    
+    Bl=linalg.inv(A0l)
+    Br=linalg.inv(A0r)
+    if 0:
+        ratio_parallel=2*np.sqrt(alpha_left[1] * alpha_right[1]) * np.exp(beta*pes.hbar*omega_l[1]) * xi[0] * xf[0]
+        ratio_perp=2*np.sqrt(alpha_left[0] * alpha_right[0]) * np.exp(beta*pes.hbar*omega_l[0]) * B[1,-1] * pes.hbar
+
+    if 1:
+        ratio_parallel= xi[0] * xf[0] / (np.sqrt(Bl[0,-2]*Br[0,-2])*pes.hbar)
+        print("zero quantity B inv: ", Bl[0,-2])
+        ratio_perp=B[1,-1] / np.sqrt(Bl[1,-1] * Br[1,-1])
+
+    print("splittings: ", theta0*pes.hbar, pes.hbar*theta0*ratio_perp, pes.hbar*theta0*np.abs(ratio_parallel), 0, 0, 0)
     return theta0*pes.hbar, pes.hbar*theta0*ratio_perp, pes.hbar*theta0*np.abs(ratio_parallel), 0, 0, 0
 
 
