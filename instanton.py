@@ -81,18 +81,22 @@ def splitting(x_opt, xmin, beta, pes, vib_ind=[0,0]):
     if 0:
         ratio_parallel=2*np.sqrt(alpha_left[1] * alpha_right[1]) * np.exp(beta*pes.hbar*omega_l[1]) * xi[0] * xf[0]
         ratio_perp=2*np.sqrt(alpha_left[0] * alpha_right[0]) * np.exp(beta*pes.hbar*omega_l[0]) * B[1,-1] * pes.hbar
+        ratio20=4*alpha_left[0]*alpha_right[0]*np.exp(2 * beta*pes.hbar*omega_l[0])*pes.hbar**2*B[1,-1]**2
 
     if 1:
         ratio_parallel= xi[0] * xf[0] / (np.sqrt(Bl[0,-2]*Br[0,-2])*pes.hbar)
         ratio_perp=B[1,-1] / np.sqrt(Bl[1,-1] * Br[1,-1])
         ratio11=B[1,-1]*xi[0]*xf[0] / (pes.hbar*Bl[0,-2]*Bl[1,-1]) #+ 2*Bl[0,-1]**2)
-    return theta0*pes.hbar, pes.hbar*theta0*ratio_perp, pes.hbar*theta0*np.abs(ratio_parallel), np.abs(ratio11)*theta0*pes.hbar, 0, 0
+        ratio20=B[1,-1]**2 / np.sqrt(Bl[1,-1]**2*Br[1,-1]**2)
+        #print("ratio20, splitting20: ", ratio20, ratio20*pes.hbar*theta0*2, ratio_perp)
+    return theta0*pes.hbar, pes.hbar*theta0*ratio_perp, pes.hbar*theta0*np.abs(ratio_parallel), np.abs(ratio11)*theta0*pes.hbar, np.abs(ratio20)*theta0*pes.hbar, 0
 
 
 
 def plot_instanton(N, beta, d=0): # for now d does nothing
     from potentials import CreaghWhelan
-    pes=CreaghWhelan(n=2, k=0.5, c=0.3, gamma=0., rotate=True)
+    #pes=CreaghWhelan(n=2, k=0.5, c=0.3, gamma=0., rotate=True)
+    pes=CreaghWhelan(n=2, k=0.2, c=2, assym=False, rotate=True, gamma=0)
     f=2
     N=int(N)
     xmin=np.array([-1,0])
@@ -118,7 +122,7 @@ def plot_instanton(N, beta, d=0): # for now d does nothing
     columns=[r'$n_1,n_2$', r'$\hbar\theta_{n_1, n_2}^\mathrm{inst}$', r'$\Delta_{n_1, n_2}^\mathrm{inst}$', r'$\Delta^\mathrm{DVR}_{n_1, n_2}$' ]
     if d00 == 0:
         data=np.array(data)
-        data[:,-1] = ["2.47e-8", "3.45e-8", "4.06e-6", "5.05e-6", "3.22e-7"] 
+        data[:,-1] = ["4.58e-8", "22.8e-7", "7.82e-6", "3.55e-5", "1.21e-6"] 
     
     table=plt.table(colLabels=columns, cellText=data,
                     loc='right', bbox=[1.1, 0.0, 0.9, 1])
