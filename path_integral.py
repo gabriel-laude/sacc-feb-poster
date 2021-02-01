@@ -59,8 +59,9 @@ class adiabatic(Beads):
                 Beads.__init__(self, PES)
                 self.mass = mass
                 self.PES=PES 
-                self.omega0=np.sqrt(linalg.eigvalsh(PES.hessian(PES.x0)))
                 self.f = f
+                if self.f == 1: self.omega0=np.sqrt(PES.hessian(PES.x0))
+                if self.f == 2: self.omega0=np.sqrt(linalg.eigvalsh(PES.hessian(PES.x0)))
 
         def beads(self, x, t):
                 N = len(x) - 1
@@ -113,7 +114,6 @@ class adiabatic(Beads):
                 if f == 1:
                     res[0] += self.omega0*(x[0] - self.PES.x0)
                     res[-1] += self.omega0*(x[-1] + self.PES.x0)
-                
                 else:
                     # build X
                     evals_l, U_l=linalg.eigh(self.PES.hessian(xmin))
@@ -189,6 +189,7 @@ class adiabatic(Beads):
                 elif d2Vdx2.ndim == 3:
                         f = d2Vdx2.shape[2]
                 else:
+                        print("d2Vdx2.ndim: ", d2Vdx2.ndim)
                         assert False
                 N, dt = self.beads(x, t)
                 res = np.zeros(((N+1)*f,(N+1)*f))
