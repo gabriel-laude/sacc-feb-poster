@@ -112,7 +112,7 @@ def splitting(x_opt, xmin, beta, pes, vib_ind=[0,0], f=2):
         xf=x_opt[-1] + pes.x0
         print('xi: ', xi)
         print('xf: ', xf)
-    if integral: # momentum is integral
+    if integral and f!=2: # momentum is integral
         from scipy import integrate
         ind=np.argmax(V)
         integrand_l=np.array([momentum_integrand(xi, pes) for xi in x_opt[:ind]])
