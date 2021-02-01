@@ -110,8 +110,8 @@ def splitting(x_opt, xmin, beta, pes, vib_ind=[0,0], f=2):
     if f==2 or (f==1 and not integral):
         xi=x_opt[0] - pes.x0
         xf=x_opt[-1] + pes.x0
-        print('xi: ', xi)
-        print('xf: ', xf)
+        #print('xi: ', xi)
+        #print('xf: ', xf)
     if integral and f!=2: # momentum is integral
         from scipy import integrate
         ind=np.argmax(V)
