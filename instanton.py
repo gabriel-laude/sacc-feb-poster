@@ -18,7 +18,11 @@ def optimiser(xguess, pes, beta, N, gtol=1e-8, f=2):
         return x
 
 
+def momentum_integrand(x, pes):
+    p=np.sqrt(2*pes.mass*pes.potential(x))
+    f=1/p*pes.gradient(x)
 
+    return f
 
 
 
@@ -101,9 +105,24 @@ def splitting(x_opt, xmin, beta, pes, vib_ind=[0,0], f=2):
         print("Phi is: ", Phi) 
         print('theta0, delta0: ', theta0, 2*pes.hbar*theta0)
 
-    # linear instanton, so we make it far far simpler
-    xi=x_opt[0] - pes.x0
-    xf=x_opt[-1] + pes.x0
+    # linear instanton; thus appropriate measures taken
+    integral=True
+    if f==2 or (f==1 and not integral):
+        xi=x_opt[0] - pes.x0
+        xf=x_opt[-1] + pes.x0
+        print('xi: ', xi)
+        print('xf: ', xf)
+    if integral: # momentum is integral
+        from scipy import integrate
+        ind=np.argmax(V)
+        integrand_l=np.array([momentum_integrand(xi, pes) for xi in x_opt[:ind]])
+        integrand_r=np.array([momentum_integrand(xi, pes) for xi in x_opt[ind:]])
+        integral_l=integrate.simps(integrand_l, tau[:ind])
+        integral_r=integrate.simps(integrand_r, tau[ind:])
+        xi=np.exp(integral_l)*np.sqrt(2*pes.potential(x_opt[ind])) / omega_l
+        xf=np.exp(-integral_r)*np.sqrt(2*pes.potential(x_opt[ind])) / omega_r
+        #print('xi, xf: ', xi, xf)
+    
     Bl=linalg.inv(A0l)
     Br=linalg.inv(A0r)
     if 0:
@@ -113,7 +132,7 @@ def splitting(x_opt, xmin, beta, pes, vib_ind=[0,0], f=2):
 
     if f == 1:
         #ratio1=xi * xf / (np.sqrt(Bl[0,-2]*Br[0,-2])*pes.hbar)
-        ratio1=2*np.sqrt(alpha_left*alpha_right)*np.exp(beta*pes.hbar*(omega_l+omega_r)/2)*xi*xf
+        ratio1=np.abs(2*np.sqrt(alpha_left*alpha_right)*np.exp(beta*pes.hbar*(omega_l+omega_r)/2)*xi*xf)
         ratio2=ratio1**2/2
         #print('ground state, ratio1, ratio2: ', theta0*2, ratio1, ratio2)
         return theta0, theta0*ratio1, theta0*ratio2
@@ -164,33 +183,32 @@ def plot_instanton(N, beta, d=0): # for now d does nothing
                     loc='right', bbox=[1.1, 0.0, 0.9, 1])
 
 
-def plot_1d(N, beta, d=0): # for now d does nothing
+def plot_1d(N=32, beta=60, d=0, V0=2): # for now d does nothing
     from potentials import AsymDW
-    V0=2
     x0=5*np.sqrt(V0)
     a=1e-7/x0**2
     b=1e-7/x0
     a=b=0
     pes=AsymDW(V0, x0, a, b)
-    N=128
-    beta=30
     
     if 1:
-        tau=np.linspace(0, beta*pes.hbar, N)
+        tau=np.linspace(0, beta*pes.hbar, int(N))
         omega0=np.sqrt(pes.hessian(pes.x0))
-        xguess=np.array([-pes.x0*np.tanh(omega0/2*(tau[i]-tau[N//2])) for i in range(N)])
+        xguess=np.array([-pes.x0*np.tanh(omega0/2*(tau[i]-tau[int(N)//2])) for i in range(int(N))])
     
-    x_opt=optimiser(xguess, pes, beta, N, f=1, gtol=1e-6)
-    plt.plot(x_opt, pes.potential(x_opt), 'o-')
-    theta0, theta1, theta2 = splitting(x_opt, xmin, beta, pes, f=1)
+    x_opt=optimiser(xguess, pes, beta, N, f=1, gtol=1e-8)
+    plt.plot(x_opt, pes.potential(x_opt), 'bo-')
+    plt.yticks(np.arange(0, V0+0.5, step=0.5))
+    plt.xlabel(r'$x$')
+    plt.ylabel(r'$V(x)$')
+    theta0, theta1, theta2 = splitting(x_opt, x0, beta, pes, f=1)
     d0=d1=d2=0 # for now
 
     # generate splitting results and put into plot
     data = [['0', "{:.2e}".format(theta0), "{:.2e}".format(2*np.sqrt(theta0**2 + d0**2)), 'tbd'],
             ['1', "{:.2e}".format(theta1), "{:.2e}".format(2*np.sqrt(theta1**2 + d1**2)), 'tbd'],
             ['2', "{:.2e}".format(theta2), "{:.2e}".format(2*np.sqrt(theta2**2 + d2**2)), 'tbd']]
-            #['(0,2)', "{:.2e}".format(theta02), "{:.2e}".format(2*np.sqrt(theta02**2 + d02**2)), 'tbd']]
-    columns=[r'$n_1,n_2$', r'$\hbar\theta_{n_1, n_2}^\mathrm{inst}$', r'$\Delta_{n_1, n_2}^\mathrm{inst}$', r'$\Delta^\mathrm{DVR}_{n_1, n_2}$' ]
+    columns=[r'$n$', r'$\hbar\theta_{n}^\mathrm{inst}$', r'$\Delta_{n}^\mathrm{inst}$', r'$\Delta^\mathrm{DVR}_{n}$' ]
     if d0 == 0:
         data=np.array(data)
         #data[:,-1] = ["4.58e-8", "22.8e-7", "7.82e-6", "3.55e-5", "1.21e-6"] 
@@ -198,6 +216,9 @@ def plot_1d(N, beta, d=0): # for now d does nothing
     table=plt.table(colLabels=columns, cellText=data,
                     loc='right', bbox=[1.1, 0.0, 0.9, 1])
 
+
+###############################################################################
+# tests go here
 if 0:
     from potentials import CreaghWhelan
     pes=CreaghWhelan(n=2, k=0.5, c=0.3, gamma=0.0, rotate=True)
@@ -216,7 +237,7 @@ if 0:
     splitting(x_opt, xmin, beta, pes)
 
 
-if 1:
+if 0:
     from potentials import AsymDW
     V0=2
     x0=5*np.sqrt(V0)
@@ -234,7 +255,7 @@ if 1:
         omega0=np.sqrt(pes.hessian(pes.x0))
         xguess=np.array([-pes.x0*np.tanh(omega0/2*(tau[i]-tau[N//2])) for i in range(N)])
     
-    x_opt=optimiser(xguess, pes, beta, N, f=1, gtol=1e-6)
+    x_opt=optimiser(xguess, pes, beta, N, f=1, gtol=1e-7)
 
     #print(x_opt)
     pes.plot(trajectory=x_opt)
