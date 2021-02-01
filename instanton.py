@@ -49,7 +49,7 @@ def splitting(x_opt, xmin, beta, pes, vib_ind=[0,0], f=2):
     Y=np.zeros((N*f, N*f))
 
     if f == 1:
-        omega_l, omega_r = np.sqrt(pes.hessian(x_opt[0])), np.sqrt(pes.hessian(x_opt[-1]))
+        omega_l, omega_r = np.sqrt(pes.hessian(pes.x0)), np.sqrt(pes.hessian(-pes.x0))
         Y[0,0]=omega_l
         Y[-1,-1]=omega_r
     if f == 2:
@@ -92,7 +92,7 @@ def splitting(x_opt, xmin, beta, pes, vib_ind=[0,0], f=2):
     Phi = np.sqrt(beta*pes.hbar/N * np.exp(logdet_A - 0.5*(logdet_Al + logdet_Ar)))
     theta0=np.sqrt(S / (2*np.pi*pes.hbar)) / Phi * np.exp(-S / pes.hbar)
     delta0=2*pes.hbar*theta0
-    if 1:
+    if 0:
         print('determinants: ', linalg.det(A0l), linalg.det(A0r), np.prod(evals_A[1:]))
         print('logdets: ', logdet_Al, logdet_Ar, logdet_A)
         print('exp logdets: ', np.exp(logdet_A - 0.5*(logdet_Al + logdet_Ar)))
@@ -112,12 +112,15 @@ def splitting(x_opt, xmin, beta, pes, vib_ind=[0,0], f=2):
         ratio20=4*alpha_left[0]*alpha_right[0]*np.exp(2 * beta*pes.hbar*omega_l[0])*pes.hbar**2*B[1,-1]**2
 
     if f == 1:
-        ratio1=xi * xf / (np.sqrt(Bl[0,-2]*Br[0,-2])*pes.hbar)
+        #ratio1=xi * xf / (np.sqrt(Bl[0,-2]*Br[0,-2])*pes.hbar)
+        ratio1=2*np.sqrt(alpha_left*alpha_right)*np.exp(beta*pes.hbar*(omega_l+omega_r)/2)*xi*xf
         ratio2=ratio1**2/2
-        print('ground state, ratio1, ratio2: ', theta0*2, ratio1, ratio2)
-    
+        #print('ground state, ratio1, ratio2: ', theta0*2, ratio1, ratio2)
+        return theta0, theta0*ratio1, theta0*ratio2
+
     if 1 and f==2:
-        ratio_parallel= xi[0] * xf[0] / (np.sqrt(Bl[0,-2]*Br[0,-2])*pes.hbar)
+        #ratio_parallel= xi[0] * xf[0] / (np.sqrt(Bl[0,-2]*Br[0,-2])*pes.hbar)
+        ratio_parallel=2*np.sqrt(alpha_left[1] * alpha_right[1]) * np.exp(beta*pes.hbar*(omega_l[1]+omega_r[1])/2) * xi[0] * xf[0]
         ratio_perp=B[1,-1] / np.sqrt(Bl[1,-1] * Br[1,-1])
         ratio11=B[1,-1]*xi[0]*xf[0] / (pes.hbar*Bl[0,-2]*Bl[1,-1]) #+ 2*Bl[0,-1]**2)
         ratio20=B[1,-1]**2 / np.sqrt(Bl[1,-1]**2*Br[1,-1]**2)
@@ -161,6 +164,39 @@ def plot_instanton(N, beta, d=0): # for now d does nothing
                     loc='right', bbox=[1.1, 0.0, 0.9, 1])
 
 
+def plot_1d(N, beta, d=0): # for now d does nothing
+    from potentials import AsymDW
+    V0=2
+    x0=5*np.sqrt(V0)
+    a=1e-7/x0**2
+    b=1e-7/x0
+    a=b=0
+    pes=AsymDW(V0, x0, a, b)
+    N=128
+    beta=30
+    
+    if 1:
+        tau=np.linspace(0, beta*pes.hbar, N)
+        omega0=np.sqrt(pes.hessian(pes.x0))
+        xguess=np.array([-pes.x0*np.tanh(omega0/2*(tau[i]-tau[N//2])) for i in range(N)])
+    
+    x_opt=optimiser(xguess, pes, beta, N, f=1, gtol=1e-6)
+    plt.plot(x_opt, pes.potential(x_opt), 'o-')
+    theta0, theta1, theta2 = splitting(x_opt, xmin, beta, pes, f=1)
+    d0=d1=d2=0 # for now
+
+    # generate splitting results and put into plot
+    data = [['0', "{:.2e}".format(theta0), "{:.2e}".format(2*np.sqrt(theta0**2 + d0**2)), 'tbd'],
+            ['1', "{:.2e}".format(theta1), "{:.2e}".format(2*np.sqrt(theta1**2 + d1**2)), 'tbd'],
+            ['2', "{:.2e}".format(theta2), "{:.2e}".format(2*np.sqrt(theta2**2 + d2**2)), 'tbd']]
+            #['(0,2)', "{:.2e}".format(theta02), "{:.2e}".format(2*np.sqrt(theta02**2 + d02**2)), 'tbd']]
+    columns=[r'$n_1,n_2$', r'$\hbar\theta_{n_1, n_2}^\mathrm{inst}$', r'$\Delta_{n_1, n_2}^\mathrm{inst}$', r'$\Delta^\mathrm{DVR}_{n_1, n_2}$' ]
+    if d0 == 0:
+        data=np.array(data)
+        #data[:,-1] = ["4.58e-8", "22.8e-7", "7.82e-6", "3.55e-5", "1.21e-6"] 
+    
+    table=plt.table(colLabels=columns, cellText=data,
+                    loc='right', bbox=[1.1, 0.0, 0.9, 1])
 
 if 0:
     from potentials import CreaghWhelan
@@ -188,8 +224,8 @@ if 1:
     b=1e-7/x0
     a=b=0
     pes=AsymDW(V0, x0, a, b)
-    N=256
-    beta=80
+    N=128
+    beta=30
     
     if 0: 
         xguess=np.linspace(-pes.x0, pes.x0, N)
