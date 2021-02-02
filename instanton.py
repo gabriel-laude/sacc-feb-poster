@@ -183,7 +183,7 @@ def plot_instanton(N, beta, d=0): # for now d does nothing
                     loc='right', bbox=[1.1, 0.0, 0.9, 1])
 
 
-def plot_1d(N=32, beta=60, b=0, V0=2): # for now d does nothing
+def plot_1d(N=32, beta=30, b=0, V0=2): # for now d does nothing
     from potentials import AsymDW
     x0=5*np.sqrt(V0)
     a_pass=b/x0**2
