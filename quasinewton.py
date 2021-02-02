@@ -108,7 +108,7 @@ def lbfgs(func, x0, M=3, maxiter=100, gtol=1e-5, dguess=1.0, maxstep=0.3, maxeri
                 # termination test
                 normg = numpy.linalg.norm(g)
                 if normg < gtol:
-                        if verbosity >= 0: print("lbfgs converged after %i iterations" % iter)
+                        #if verbosity >= 0: print("lbfgs converged after %i iterations" % iter)
                         if path: return xt, f
                         else: return xk, f
 

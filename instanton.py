@@ -8,9 +8,9 @@ def optimiser(xguess, pes, beta, N, gtol=1e-8, f=2):
     oldN = len(xguess)
     if N != oldN:
         from modules import interpolate
-        xguess = interpolate(xguess, f, N).flatten()
+        xguess = interpolate(xguess, f, int(N)).flatten()
     traj=path_integral.adiabatic(pes, 1, f=f)
-    x, value = quasinewton.lbfgs(traj.both_trial, xguess.ravel(), gtol=gtol, tau=beta*pes.hbar, maxiter=1000)
+    x, value = quasinewton.lbfgs(traj.both_trial, xguess.ravel(), gtol=gtol, tau=beta*pes.hbar, maxiter=1000, verbosity=0)
 
     if f==2:
         return x.reshape((len(xguess), f))
@@ -196,7 +196,22 @@ def plot_1d(N=32, beta=60, b=0, V0=2): # for now d does nothing
         omega0=np.sqrt(pes.hessian(pes.x0))
         xguess=np.array([-pes.x0*np.tanh(omega0/2*(tau[i]-tau[int(N)//2])) for i in range(int(N))])
     
-    x_opt=optimiser(xguess, pes, beta, N, f=1, gtol=1e-8)
+    if N >= 32:
+        maxlog = int(np.log2(N))
+        logvals=range(4, maxlog)
+        allx=[]
+        #Nvals=[2**i for i in logvals]
+        for i, val in enumerate(logvals):
+            N=2**val
+            if i == 0:
+                x_opt=optimiser(xguess, pes, beta, N, f=1, gtol=1e-8)
+            else:
+                x_opt=optimiser(allx[i-1].flatten(), pes, beta, N, f=1, gtol=1e-8)
+            allx.append(x_opt)
+    else:
+        x_opt=optimiser(xguess, pes, beta, N, f=1, gtol=1e-8)
+    
+    
     if 1:
         plt.plot(x_opt, pes.potential(x_opt), 'bo-')
         plt.yticks(np.arange(0, V0+0.5, step=0.5))
