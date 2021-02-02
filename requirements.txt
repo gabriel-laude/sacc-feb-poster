@@ -2,4 +2,3 @@ nbinteract
 numpy
 scipy
 matplotlib
-jupyter-book
