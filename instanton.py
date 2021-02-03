@@ -206,7 +206,7 @@ def plot_instanton(N, beta, b=0): # for now d does nothing
             ['(1,1)', "{:.2e}".format(d11), "{:.2e}".format(theta11), "{:.2e}".format(2*np.sqrt(theta11**2 + d11**2)), 'tbd'],
             ['(2,0)',"{:.2e}".format(d20),  "{:.2e}".format(theta20), "{:.2e}".format(2*np.sqrt(theta20**2 + d20**2)), 'tbd']]
             #['(0,2)', "{:.2e}".format(theta02), "{:.2e}".format(2*np.sqrt(theta02**2 + d02**2)), 'tbd']]
-    columns=[r'$n_1,n_2$', r'$d_{n_1,n_2}$', r'$\hbar\theta_{n_1, n_2}^\mathrm{inst}$', r'$\Delta_{n_1, n_2}^\mathrm{inst}$', r'$\Delta^\mathrm{DVR}_{n_1, n_2}$' ]
+    columns=[r'$n_1,n_2$', r'$d_{n_1,n_2}$', r'$\hbar\Omega_{n_1, n_2}^\mathrm{inst}$', r'$\Delta_{n_1, n_2}^\mathrm{inst}$', r'$\Delta^\mathrm{DVR}_{n_1, n_2}$' ]
     data=np.array(data)
     #print('b is: ', (b))
     if b == 1e-9:
@@ -273,7 +273,7 @@ def plot_1d(N=32, beta=30, b=0, V0=2): # for now d does nothing
     data = [['0', "{:.2e}".format(d0), "{:.2e}".format(theta0), "{:.2e}".format(2*np.sqrt(theta0**2 + d0**2)), 'tbd'],
             ['1', "{:.2e}".format(d1), "{:.2e}".format(theta1), "{:.2e}".format(2*np.sqrt(theta1**2 + d1**2)), 'tbd'],
             ['2', "{:.2e}".format(d2), "{:.2e}".format(theta2), "{:.2e}".format(2*np.sqrt(theta2**2 + d2**2)), 'tbd']]
-    columns=[r'$n$', r'$d_n$', r'$\hbar\theta_{n}^\mathrm{inst}$', r'$\Delta_{n}^\mathrm{inst}$', r'$\Delta^\mathrm{DVR}_{n}$' ]
+    columns=[r'$n$', r'$d_n$', r'$\hbar\Omega_{n}^\mathrm{inst}$', r'$\Delta_{n}^\mathrm{inst}$', r'$\Delta^\mathrm{DVR}_{n}$' ]
     data=np.array(data)
     
     # hard code DVR data
