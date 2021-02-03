@@ -274,9 +274,29 @@ def plot_1d(N=32, beta=30, b=0, V0=2): # for now d does nothing
             ['1', "{:.2e}".format(d1), "{:.2e}".format(theta1), "{:.2e}".format(2*np.sqrt(theta1**2 + d1**2)), 'tbd'],
             ['2', "{:.2e}".format(d2), "{:.2e}".format(theta2), "{:.2e}".format(2*np.sqrt(theta2**2 + d2**2)), 'tbd']]
     columns=[r'$n$', r'$d_n$', r'$\hbar\theta_{n}^\mathrm{inst}$', r'$\Delta_{n}^\mathrm{inst}$', r'$\Delta^\mathrm{DVR}_{n}$' ]
-    if d0 == 0:
-        data=np.array(data)
-        #data[:,-1] = ["4.58e-8", "22.8e-7", "7.82e-6", "3.55e-5", "1.21e-6"] 
+    data=np.array(data)
+    
+    # hard code DVR data
+    if V0==2:
+        if b<=1.05e-9 and b>=0.95e-9:
+            data[:,-1] = ["4.15e-8", "7.40e-6", "5.14e-4"] 
+        if b<=1.05e-11 and b>=0.95e-11:
+            data[:,-1]=["4.15e-8", "7.40e-6", "5.14e-4"] 
+        if b<=1.05e-7 and b>=0.95e-7:
+            data[:,-1]=["4.95e-8", "7.40e-6", "5.14e-4"]
+        if b<=1.05e-5 and b>=0.95e-7:
+            data[:,-1]=["2.70e-6", "1.04e-5", "5.14e-4"]
+            
+    if V0==3:
+        if b<=1.05e-13 and b>=0.95e-13:
+            data[:,-1] = ["4.15e-12", "1.22e-9", "1.56e-7"] 
+        if b<=1.05e-11 and b>=0.95e-11:
+            data[:,-1] = ["5.00e-12", "1.22e-9", "1.56e-7"]
+        if b<=1.05e-9 and b>=0.95e-9:
+            data[:,-1] = ["2.75e-10", "1.74e-9", "1.56e-7"]
+        if b<=1.05e-7 and b>=0.95e-7:
+            data[:,-1] = ["2.75e-8", "7.76e-8", "1.97e-7"]
+    
     
     table=plt.table(colLabels=columns, cellText=data,
                     loc='right', bbox=[1.1, 0.0, 0.9, 1])
