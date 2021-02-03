@@ -10,7 +10,7 @@ def optimiser(xguess, pes, beta, N, gtol=1e-8, f=2):
         from modules import interpolate
         xguess = interpolate(xguess, f, int(N)).flatten()
     traj=path_integral.adiabatic(pes, 1, f=f)
-    x, value = quasinewton.lbfgs(traj.both_trial, xguess.ravel(), gtol=gtol, tau=beta*pes.hbar, maxiter=1000, verbosity=0)
+    x, value = quasinewton.lbfgs(traj.both_trial, xguess.ravel(), gtol=gtol, tau=beta*pes.hbar, maxiter=10000, verbosity=0)
 
     if f==2:
         return x.reshape((len(xguess), f))
