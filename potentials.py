@@ -3,24 +3,25 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 class CreaghWhelan(object):
-        def __init__(self, k=0.1, n=4, c=2, b=0, rotate=False, gamma=0.75):
+        def __init__(self, k=0.1, n=4, c=2, b=0, rotate=False, gamma=0.75, alpha=1):
                 self.k = k
                 self.c = c
                 self.mass = 1 # * 0.1 
                 self.hbar = 0.1 # determine the barrier height before adjusting. should not make this too big!
                 self.n = n
+                self.a=self.b=b
                 self.rotate=rotate
                 self.gamma=gamma
-                self.b=b
-                self.a=self.b
+                self.alpha=np.sqrt(1.0)
+                #if assym: self.a,self.b=1./3, 1./3 # Allow user to change this?
                 #else: self.a,self.b=0,0
         def potential(self, x):
                 x, y = x[...,0], x[...,1]
                 if self.rotate:
-                    return (x**2 - 1)**self.n *(self.a*x**2+self.b*x+1) + self.c*x**2*y**2 + self.k*(y + self.gamma*(x**2 - 1))**2
+                    return (x**2 - self.alpha)**self.n *(self.a*x**2+self.b*x+1) + self.c*x**2*y**2 + self.k*(y + self.gamma*(x**2 - 1))**2
 
                 else:
-                    return (x**2 - 1)**self.n *(self.a*x**2+self.b*x+1) + self.c*x**2*y**2 + self.k*y**2
+                    return (x**2 - self.alpha)**self.n *(self.a*x**2+self.b*x+1) + self.c*x**2*y**2 + self.k*y**2
                 
 
         def gradient(self, x):
@@ -29,8 +30,8 @@ class CreaghWhelan(object):
                 #g[...,0] = 2*self.n*x*(x**2 - 1)**(self.n-1) + 2*self.c*x*y**2 + 2*self.k*(y+self.gamma*(x**2 - 1))*(2*self.gamma*x)
                 #g[...,1] = 2*self.c*x**2*y + 2*self.k*y # old
 
-                g[..., 0] = (self.a * x ** 2 + self.b * x + 1) * 2 * self.n * x * (x ** 2 - 1) ** (self.n - 1) + (
-                                        2 * self.a * x + self.b) * (x ** 2 - 1) ** self.n + 2 * self.c * x * y ** 2 + 2*self.k*(y+self.gamma*(x**2 - 1))*(2*self.gamma*x) # asymmetric
+                g[..., 0] = (self.a * x ** 2 + self.b * x + 1) * 2 * self.n * x * (x ** 2 - self.alpha) ** (self.n - 1) + (
+                                        2 * self.a * x + self.b) * (x ** 2 - self.alpha) ** self.n + 2 * self.c * x * y ** 2 + 2*self.k*(y+self.gamma*(x**2 - 1))*(2*self.gamma*x) # asymmetric
                 g[...,1] = 2*self.c*x**2*y + 2*self.k*(y+self.gamma*(x**2 - 1))
                 return g
         def force(self, x):
@@ -39,10 +40,15 @@ class CreaghWhelan(object):
                 H = np.empty((2,2))
                 x, y = x[...,0], x[...,1]
                 #H[0,0] = 2*self.n*(x**2-1)**(self.n-1) + 4*self.n*(self.n-1)*x**2*(x**2-1)**(self.n-2) + 2*self.c*y**2
-                H[0, 0] = (2 * self.n * (x ** 2 - 1) ** (self.n - 1) + 4 * self.n * (self.n - 1) * x ** 2 * (x ** 2 - 1) ** (
+                H[0, 0] = (2 * self.n * (x ** 2 - self.alpha) ** (self.n - 1) + 4 * self.n * (self.n - 1) * x ** 2 * (x ** 2 - self.alpha) ** (
                                         self.n - 2)) * (self.a * x ** 2 + self.b * x + 1) + 2 * self.c * y ** 2 + 2 * self.a * (
-                                                          x ** 2 - 1) ** self.n + 2 * x * (2 * self.a * x + self.b) * (self.n - 1) * (x ** 2 - 1) ** (
-                                                          self.n - 1) + (2*self.a*x + self.b)*(2*x*self.n)*(x**2-1)**(self.n-1) + 4*self.k*self.gamma*(y+self.gamma*(3*x**2-1))
+                                                          x ** 2 - self.alpha) ** self.n + 2 * x * (2 * self.a * x + self.b) * (self.n - 1) * (x ** 2 - self.alpha) ** (
+                                                          self.n - 1) + (2*self.a*x + self.b)*(2*x*self.n)*(x**2-self.alpha)**(self.n-1) + 4*self.k*self.gamma*(y+self.gamma*(3*x**2-1))
+                
+                #H[0,0]=2*self.n*x*(self.n-1)*(self.a*x**2*self.b*x+1)*(2*x)*(x**2-self.alpha)**(self.n-2) \
+                #        +2*self.n*(self.a*x**2+self.b*x+1)*(x**2-self.alpha)**(self.n-1) \
+                #        +2*self.n*x*(2*self.a*x+self.b)*(x**2-self.alpha)**(self.n-1)
+                
                 H[0,1] = H[1,0] = 4*self.c*x*y + 4*self.k*self.gamma*x
                 H[1,1] = 2*self.c*x**2 + 2*self.k
                 
@@ -126,5 +132,9 @@ class AsymDW(object):
 ###############################
 # test potentials
 if __name__ == "__main__": 
-    pes=CreaghWhelan(n=2, k=0.5, c=0.3, gamma=0.5, rotate=True)
+    pes=CreaghWhelan(n=2, k=0.2, c=2, gamma=0.0, rotate=False, b=1./3)
+    from polylib import numderiv
+    x=np.array([1.,1.])
+    numderiv.assert_grad(x, pes.potential, pes.gradient,h=1e-4)
+    numderiv.assert_hess(x, pes.potential, pes.hessian, h=1e-4)
     pes.plot(show=True)

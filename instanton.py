@@ -94,8 +94,9 @@ def splitting(x_opt, xmin, beta, pes, vib_ind=[0,0], f=2):
     logdet_A = np.sum(np.log(evals_A[1:]))
     Phi = np.sqrt(beta*pes.hbar/N * np.exp(logdet_A - 0.5*(logdet_Al + logdet_Ar)))
     theta0=np.sqrt(S / (2*np.pi*pes.hbar)) / Phi * np.exp(-S / pes.hbar)
-    delta0=2*pes.hbar*theta0
+    
     if 0:
+        delta0=2*pes.hbar*theta0
         print('determinants: ', linalg.det(A0l), linalg.det(A0r), np.prod(evals_A[1:]))
         print('logdets: ', logdet_Al, logdet_Ar, logdet_A)
         print('exp logdets: ', np.exp(logdet_A - 0.5*(logdet_Al + logdet_Ar)))
@@ -149,17 +150,19 @@ def splitting(x_opt, xmin, beta, pes, vib_ind=[0,0], f=2):
 def plot_instanton(N, beta, b=0): # for now d does nothing
     from potentials import CreaghWhelan
     #pes=CreaghWhelan(n=2, k=0.5, c=0.3, gamma=0., rotate=True)
-    pes=CreaghWhelan(n=2, k=0.2, c=2, b=b, rotate=True, gamma=0)
+    pes=CreaghWhelan(n=2, k=0.2, c=2, b=b, rotate=False, gamma=0)
     f=2
     N=int(N)
-    xmin=np.array([-1,0])
+    alpha=np.sqrt(1.0)
+    xmin=np.array([-np.sqrt(alpha),0])
     x_comp = np.linspace(xmin[0], -xmin[0], N)
     y_comp = np.linspace(xmin[1], xmin[1], N)
     xguess=np.zeros((N,f))
     xguess[:,0]=x_comp
     xguess[:,1]=y_comp
     pes.x0=xmin
-    x_opt=optimiser(xguess, pes, beta, N)
+    #print('check potential at minima: ', pes.potential(pes.x0))
+    x_opt=optimiser(xguess, pes, beta, N, gtol=1e-8)
     
     pes.plot(trajectory=x_opt, show=False, npts=20)
     theta0, theta10, theta01, theta11, theta20, theta02 = splitting(x_opt, xmin, beta, pes)
@@ -167,19 +170,20 @@ def plot_instanton(N, beta, b=0): # for now d does nothing
     omega_r=np.sqrt(linalg.eigvalsh(pes.hessian(-pes.x0)))
     #print('hessian at minima: ', pes.hessian(pes.x0))
     #print('try eigvals again: ', np.sqrt(linalg.eigvalsh(pes.hessian(pes.x0))))
-    print('frequencies: ', omega_l, omega_r)
+    print('frequencies (left, right): ', omega_l, omega_r)
+    #print('barrier height: ', pes.potential(np.array([0,0])))
     
     # all energies
     E0l=0.5*pes.hbar*(np.sum(omega_l))
     E0r=0.5*pes.hbar*(np.sum(omega_r))
-    E10l=3/2*omega_l[0] + 1/2*(omega_l[1])*pes.hbar
-    E10r=3/2*omega_r[0] + 1/2*(omega_r[1])*pes.hbar
-    E01l=3/2*omega_l[1] + 1/2*(omega_l[0])*pes.hbar
-    E01r=3/2*omega_r[1] + 1/2*(omega_r[0])*pes.hbar
-    E11l=3/2*pes.hbar*(np.sum(omega_l))*pes.hbar
-    E11r=3/2*pes.hbar*(np.sum(omega_r))*pes.hbar
-    E20l=5/2*omega_l[0] + 1/2*(omega_l[1])*pes.hbar
-    E20r=5/2*omega_r[0] + 1/2*(omega_r[1])*pes.hbar
+    E10l=(3/2*omega_l[0] + 1/2*(omega_l[1]))*pes.hbar
+    E10r=(3/2*omega_r[0] + 1/2*(omega_r[1]))*pes.hbar
+    E01l=(3/2*omega_l[1] + 1/2*(omega_l[0]))*pes.hbar
+    E01r=(3/2*omega_r[1] + 1/2*(omega_r[0]))*pes.hbar
+    E11l=(3/2*pes.hbar*(np.sum(omega_l)))
+    E11r=(3/2*pes.hbar*(np.sum(omega_r)))
+    E20l=(5/2*omega_l[0] + 1/2*(omega_l[1]))*pes.hbar
+    E20r=(5/2*omega_r[0] + 1/2*(omega_r[1]))*pes.hbar
     
 
     d00=0.5*np.abs(E0l-E0r)
@@ -189,6 +193,9 @@ def plot_instanton(N, beta, b=0): # for now d does nothing
     d20=0.5*np.abs(E20l-E20r) 
     #print(d00, d10, d01, d11, d20)
     
+    #print('harmonic energies, E0l, E01, E11: ', E0l, E01l, E11l)
+    #print('harmonic energies, E0l, E10, E20: ', E0l, E10l, E20l)
+    #print('more harmonic: ', 1.5*omega_l[0], 1.5*omega_r[0], omega_l[0]-omega_r[0])
     
     #d00=d10=d01=d11=d20=d02=0
     
@@ -200,9 +207,16 @@ def plot_instanton(N, beta, b=0): # for now d does nothing
             ['(2,0)',"{:.2e}".format(d20),  "{:.2e}".format(theta20), "{:.2e}".format(2*np.sqrt(theta20**2 + d20**2)), 'tbd']]
             #['(0,2)', "{:.2e}".format(theta02), "{:.2e}".format(2*np.sqrt(theta02**2 + d02**2)), 'tbd']]
     columns=[r'$n_1,n_2$', r'$d_{n_1,n_2}$', r'$\hbar\theta_{n_1, n_2}^\mathrm{inst}$', r'$\Delta_{n_1, n_2}^\mathrm{inst}$', r'$\Delta^\mathrm{DVR}_{n_1, n_2}$' ]
+    data=np.array(data)
+    print('b is: ', (b))
     if b == 1e-9:
-        data=np.array(data)
         data[:,-1] = ["4.58e-8", "2.28e-7", "7.82e-6", "3.55e-5", "1.21e-6"] 
+    if b == 1e-7:
+        data[:,-1] = ["4.77e-8", "2.28e-7", "7.82e-6", "3.55e-5", "1.21e-6"] 
+    if b>= 9.5e-6 and b <= 1.05e-5:
+        data[:,-1] = ["1.33e-6", "1.38e-6", "8.59e-6", "3.56e-5", "1.95e-6"] 
+    if b == 1e-3:
+        data[:,-1] = ["1.33e-4", "1.36e-4", "3.56e-4", "3.43e-4", "1.52e-4"] 
     
     table=plt.table(colLabels=columns, cellText=data,
                     loc='right', bbox=[1.1, 0.0, 0.9, 1])
