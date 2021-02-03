@@ -35,7 +35,7 @@ def splitting(x_opt, xmin, beta, pes, vib_ind=[0,0], f=2):
     tau=np.linspace(0, beta*pes.hbar, int(N))
     V, dVdx, d2Vdx2 = information(x_opt, pes, f=f)
     traj=path_integral.adiabatic(pes, 1, f=f)
-    print('S/ħ: ', traj.S(x_opt, tau[-1]))
+    print('S/ħ: ', traj.S(x_opt, tau[-1]) / pes.hbar)
     
     # minima 
     if f == 2:
@@ -88,7 +88,6 @@ def splitting(x_opt, xmin, beta, pes, vib_ind=[0,0], f=2):
     A0r=traj.d2Sdx2(path_min_r, tau[-1]) + Yr
 
     # determine ground state splitting
-    d=0 # for now
     S=traj.S(x_opt, tau[-1])
     _, logdet_Al = np.linalg.slogdet(A0l)
     _, logdet_Ar = np.linalg.slogdet(A0r)
@@ -143,15 +142,14 @@ def splitting(x_opt, xmin, beta, pes, vib_ind=[0,0], f=2):
         ratio_perp=B[1,-1] / np.sqrt(Bl[1,-1] * Br[1,-1])
         ratio11=B[1,-1]*xi[0]*xf[0] / (pes.hbar*Bl[0,-2]*Bl[1,-1]) #+ 2*Bl[0,-1]**2)
         ratio20=B[1,-1]**2 / np.sqrt(Bl[1,-1]**2*Br[1,-1]**2)
-        #print("ratio20, splitting20: ", ratio20, ratio20*pes.hbar*theta0*2, ratio_perp)
         return theta0*pes.hbar, pes.hbar*theta0*ratio_perp, pes.hbar*theta0*np.abs(ratio_parallel), np.abs(ratio11)*theta0*pes.hbar, np.abs(ratio20)*theta0*pes.hbar, 0
 
 
 
-def plot_instanton(N, beta, d=0): # for now d does nothing
+def plot_instanton(N, beta, b=0): # for now d does nothing
     from potentials import CreaghWhelan
     #pes=CreaghWhelan(n=2, k=0.5, c=0.3, gamma=0., rotate=True)
-    pes=CreaghWhelan(n=2, k=0.2, c=2, assym=False, rotate=True, gamma=0)
+    pes=CreaghWhelan(n=2, k=0.2, c=2, b=b, rotate=True, gamma=0)
     f=2
     N=int(N)
     xmin=np.array([-1,0])
@@ -165,19 +163,46 @@ def plot_instanton(N, beta, d=0): # for now d does nothing
     
     pes.plot(trajectory=x_opt, show=False, npts=20)
     theta0, theta10, theta01, theta11, theta20, theta02 = splitting(x_opt, xmin, beta, pes)
-    d00=d10=d01=d11=d20=d02=0
+    omega_l=np.sqrt(linalg.eigvalsh(pes.hessian(pes.x0)))
+    omega_r=np.sqrt(linalg.eigvalsh(pes.hessian(-pes.x0)))
+    #print('hessian at minima: ', pes.hessian(pes.x0))
+    #print('try eigvals again: ', np.sqrt(linalg.eigvalsh(pes.hessian(pes.x0))))
+    print('frequencies: ', omega_l, omega_r)
+    
+    # all energies
+    E0l=0.5*pes.hbar*(np.sum(omega_l))
+    E0r=0.5*pes.hbar*(np.sum(omega_r))
+    E10l=3/2*omega_l[0] + 1/2*(omega_l[1])*pes.hbar
+    E10r=3/2*omega_r[0] + 1/2*(omega_r[1])*pes.hbar
+    E01l=3/2*omega_l[1] + 1/2*(omega_l[0])*pes.hbar
+    E01r=3/2*omega_r[1] + 1/2*(omega_r[0])*pes.hbar
+    E11l=3/2*pes.hbar*(np.sum(omega_l))*pes.hbar
+    E11r=3/2*pes.hbar*(np.sum(omega_r))*pes.hbar
+    E20l=5/2*omega_l[0] + 1/2*(omega_l[1])*pes.hbar
+    E20r=5/2*omega_r[0] + 1/2*(omega_r[1])*pes.hbar
+    
+
+    d00=0.5*np.abs(E0l-E0r)
+    d10=0.5*np.abs(E10l-E10r)
+    d01=0.5*np.abs(E01l-E01r)
+    d11=0.5*np.abs(E11l-E11r) 
+    d20=0.5*np.abs(E20l-E20r) 
+    #print(d00, d10, d01, d11, d20)
+    
+    
+    #d00=d10=d01=d11=d20=d02=0
     
     # generate splitting results and put into plot
-    data = [['(0,0)', "{:.2e}".format(theta0), "{:.2e}".format(2*np.sqrt(theta0**2 + d00**2)), 'tbd'],
-            ['(1,0)', "{:.2e}".format(theta10), "{:.2e}".format(2*np.sqrt(theta10**2 + d10**2)), 'tbd'],
-            ['(0,1)', "{:.2e}".format(theta01), "{:.2e}".format(2*np.sqrt(theta01**2 + d01**2)), 'tbd'],
-            ['(1,1)', "{:.2e}".format(theta11), "{:.2e}".format(2*np.sqrt(theta11**2 + d11**2)), 'tbd'],
-            ['(2,0)', "{:.2e}".format(theta20), "{:.2e}".format(2*np.sqrt(theta20**2 + d20**2)), 'tbd']]
+    data = [['(0,0)', "{:.2e}".format(d00), "{:.2e}".format(theta0), "{:.2e}".format(2*np.sqrt(theta0**2 + d00**2)), 'tbd'],
+            ['(1,0)',"{:.2e}".format(d10),  "{:.2e}".format(theta10), "{:.2e}".format(2*np.sqrt(theta10**2 + d10**2)), 'tbd'],
+            ['(0,1)', "{:.2e}".format(d01), "{:.2e}".format(theta01), "{:.2e}".format(2*np.sqrt(theta01**2 + d01**2)), 'tbd'],
+            ['(1,1)', "{:.2e}".format(d11), "{:.2e}".format(theta11), "{:.2e}".format(2*np.sqrt(theta11**2 + d11**2)), 'tbd'],
+            ['(2,0)',"{:.2e}".format(d20),  "{:.2e}".format(theta20), "{:.2e}".format(2*np.sqrt(theta20**2 + d20**2)), 'tbd']]
             #['(0,2)', "{:.2e}".format(theta02), "{:.2e}".format(2*np.sqrt(theta02**2 + d02**2)), 'tbd']]
-    columns=[r'$n_1,n_2$', r'$\hbar\theta_{n_1, n_2}^\mathrm{inst}$', r'$\Delta_{n_1, n_2}^\mathrm{inst}$', r'$\Delta^\mathrm{DVR}_{n_1, n_2}$' ]
-    if d00 == 0:
+    columns=[r'$n_1,n_2$', r'$d_{n_1,n_2}$', r'$\hbar\theta_{n_1, n_2}^\mathrm{inst}$', r'$\Delta_{n_1, n_2}^\mathrm{inst}$', r'$\Delta^\mathrm{DVR}_{n_1, n_2}$' ]
+    if b == 1e-9:
         data=np.array(data)
-        data[:,-1] = ["4.58e-8", "22.8e-7", "7.82e-6", "3.55e-5", "1.21e-6"] 
+        data[:,-1] = ["4.58e-8", "2.28e-7", "7.82e-6", "3.55e-5", "1.21e-6"] 
     
     table=plt.table(colLabels=columns, cellText=data,
                     loc='right', bbox=[1.1, 0.0, 0.9, 1])

@@ -3,17 +3,17 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 class CreaghWhelan(object):
-        def __init__(self, k=0.1, n=4, c=2, assym=False, rotate=False, gamma=0.75):
+        def __init__(self, k=0.1, n=4, c=2, b=0, rotate=False, gamma=0.75):
                 self.k = k
                 self.c = c
                 self.mass = 1 # * 0.1 
                 self.hbar = 0.1 # determine the barrier height before adjusting. should not make this too big!
                 self.n = n
-                self.assym = assym
                 self.rotate=rotate
                 self.gamma=gamma
-                if assym: self.a,self.b=1./3, 1./3 # Allow user to change this?
-                else: self.a,self.b=0,0
+                self.b=b
+                self.a=self.b
+                #else: self.a,self.b=0,0
         def potential(self, x):
                 x, y = x[...,0], x[...,1]
                 if self.rotate:
@@ -71,6 +71,10 @@ class CreaghWhelan(object):
                 CS=ax.contour(X, Y, V.T, np.linspace(0,2,10))
                 ax.set_xbound(-1.25,1.25)
                 ax.set_ybound(-1.25,1.25)
+                
+                plt.axis('off')
+                plt.rcParams["axes.edgecolor"] = "black"
+                plt.rcParams["axes.linewidth"] = 1
                 
                 if trajectory is not None: # plot trajectories
                     xt=np.array(trajectory)
