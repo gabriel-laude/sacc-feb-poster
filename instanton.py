@@ -208,7 +208,7 @@ def plot_instanton(N, beta, b=0): # for now d does nothing
             #['(0,2)', "{:.2e}".format(theta02), "{:.2e}".format(2*np.sqrt(theta02**2 + d02**2)), 'tbd']]
     columns=[r'$n_1,n_2$', r'$d_{n_1,n_2}$', r'$\hbar\theta_{n_1, n_2}^\mathrm{inst}$', r'$\Delta_{n_1, n_2}^\mathrm{inst}$', r'$\Delta^\mathrm{DVR}_{n_1, n_2}$' ]
     data=np.array(data)
-    print('b is: ', (b))
+    #print('b is: ', (b))
     if b == 1e-9:
         data[:,-1] = ["4.58e-8", "2.28e-7", "7.82e-6", "3.55e-5", "1.21e-6"] 
     if b == 1e-7:
