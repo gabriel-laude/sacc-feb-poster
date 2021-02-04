@@ -324,12 +324,13 @@ def plot_1d(N=32, beta=30, b=0, V0=2, bar_charts=False): # for now d does nothin
         d=ax.bar(ind+0.2, [d0, d1, d2], width=0.2, color=my_cmap.colors[127])
         ex=ax.bar(ind+0.6, [float(i) for i in data[:,-1]], width=0.2, color=my_cmap.colors[191])
         ax.set_yscale('log')
-        if V0 >= 2.95 and V0 <=3.05:
-            ax.set_ylim(1e-14, 1e-6)
-        if V0 >= 1.95 and V0 <=2.05:
-            ax.set_ylim(1e-12, 5e-3)
-        plt.xticks(ind+0.3, [r'$n=0$', r'$n=1$', r'$n=2$'])
-        ax.legend((p1[0], d[0], p2[0], ex[0]), (r'$\hbar\Omega_n^\mathrm{inst}$', r'$d_n$', r'$\Delta_n^\mathrm{inst}$', r'$\Delta_n^\mathrm{exact}$'), loc='lower center', bbox_to_anchor=(0.5, -0.25), ncol=4)
+        #if V0 >= 2.95 and V0 <=3.05:
+        #    ax.set_ylim(1e-14, 1e-6)
+        #if V0 >= 1.95 and V0 <=2.05:
+        #    ax.set_ylim(1e-12, 5e-3)
+        plt.xticks(ind+0.3, [r'$n=0$', r'$n=1$', r'$n=2$'], fontsize=15)
+        plt.yticks(fontsize=15)
+        ax.legend((p1[0], d[0], p2[0], ex[0]), (r'$\hbar\Omega_n^\mathrm{inst}$', r'$d_n$', r'$\Delta_n^\mathrm{inst}$', r'$\Delta_n^\mathrm{exact}$'), loc='lower center', bbox_to_anchor=(0.5, -0.275), ncol=4, fontsize=15)
        
         #plt.rcParams.update({'font.size': 22})
         if 0:
@@ -362,7 +363,7 @@ def plot_2d(N, beta, b=0):
     pes.x0=xmin
     x_opt=optimiser(xguess, pes, beta, N, gtol=1e-8)
     
-    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(14, 5))
+    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(16, 7))
     
     # first, pes plot, direct copy from potentials.py
     npts=50
@@ -413,17 +414,19 @@ def plot_2d(N, beta, b=0):
         
     
     theta=ax[1].bar(ind, theta_vals, width=0.2, color=my_cmap.colors)
-    d=ax[1].bar(ind+0.2, d_vals, width=0.2, color=my_cmap.colors[63])
-    inst=ax[1].bar(ind+0.4, delta_inst, width=0.2, color=my_cmap.colors[127])
+    d=ax[1].bar(ind+0.2, d_vals, width=0.2, color=my_cmap.colors[127])
+    inst=ax[1].bar(ind+0.4, delta_inst, width=0.2, color=my_cmap.colors[63])
     dvr=ax[1].bar(ind+0.6, delta_dvr, width=0.2, color=my_cmap.colors[191])
     
-    ax[1].set_ylim(5e-11, 1e-3)
+    #ax[1].set_ylim(5e-11, 1e-3)
     
-    plt.xticks(ind+0.3, [r'$(0,0)$', r'$(1,0)$', r'$(0,1)$', r'$(1,1)$', r'$(2,0)$'])
-    ax[1].set_xlabel(r'$(n_1, n_2)$')
-    ax[1].legend((theta[0], d[0], inst[0], dvr[0]), (r'$\hbar\Omega_{n_1, n_2}^\mathrm{inst}$', r'$d_{n_1, n_2}$', r'$\Delta_{n_1, n_2}^\mathrm{inst}$', r'$\Delta_{n_1, n_2}^\mathrm{exact}$'), loc='lower center', bbox_to_anchor=(0.5, -0.2), ncol=4)
-    ax[1].xaxis.set_label_coords(-0.05, -0.025)
+    plt.xticks(ind+0.3, [r'$(0,0)$', r'$(1,0)$', r'$(0,1)$', r'$(1,1)$', r'$(2,0)$'], fontsize=15)
+    plt.yticks(fontsize=15)
+    ax[1].set_xlabel(r'$(n_1, n_2)$', fontsize=15)
+    ax[1].legend((theta[0], d[0], inst[0], dvr[0]), (r'$\hbar\Omega_{n_1, n_2}^\mathrm{inst}$', r'$d_{n_1, n_2}$', r'$\Delta_{n_1, n_2}^\mathrm{inst}$', r'$\Delta_{n_1, n_2}^\mathrm{exact}$'), loc='lower center', bbox_to_anchor=(0.475, -0.225), ncol=4, fontsize=15)
+    ax[1].xaxis.set_label_coords(-0.05, -0.02)
     ax[1].set_yscale('log')
+    
     
 ###############################################################################
 # tests go here
