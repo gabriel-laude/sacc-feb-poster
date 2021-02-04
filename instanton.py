@@ -29,6 +29,8 @@ def momentum_integrand(x, pes):
 def splitting(x_opt, xmin, beta, pes, vib_ind=[0,0], f=2):
     """
     vib_ind is [n_1, n_2].
+    
+    This is the main function which evaluates results from an optimised instanton.
     """
     # instanton
     N=len(x_opt)
@@ -147,7 +149,10 @@ def splitting(x_opt, xmin, beta, pes, vib_ind=[0,0], f=2):
 
 
 
-def plot_instanton(N, beta, b=0): # for now d does nothing
+def plot_instanton(N, beta, b=0): 
+    """
+    Full optimisation for a 2D case.
+    """
     from potentials import CreaghWhelan
     #pes=CreaghWhelan(n=2, k=0.5, c=0.3, gamma=0., rotate=True)
     pes=CreaghWhelan(n=2, k=0.2, c=2, b=b, rotate=False, gamma=0)
@@ -330,7 +335,96 @@ def plot_1d(N=32, beta=30, b=0, V0=2, bar_charts=False): # for now d does nothin
         if 0:
             import mplcursors
             mplcursors.cursor((p1, p2, d, ex), hover=True)
+            
+            
+            
+def plot_2d(N, beta, b=0): 
+    """
+    Similar to plot_instanton, with one major exception: this only carries out an instanton optimisation!
+    
+    In other words, the splitting will never be calculated here and are hardcoded in order to make 
+    the poster more efficient!
+    """
+    
+    # pes-related and optimisation
+    from potentials import CreaghWhelan
+    #pes=CreaghWhelan(n=2, k=0.5, c=0.3, gamma=0., rotate=True)
+    pes=CreaghWhelan(n=2, k=0.2, c=2, b=b, rotate=False, gamma=0)
+    f=2
+    N=int(N)
+    alpha=np.sqrt(1.0)
+    xmin=np.array([-np.sqrt(alpha),0])
+    x_comp = np.linspace(xmin[0], -xmin[0], N)
+    y_comp = np.linspace(xmin[1], xmin[1], N)
+    xguess=np.zeros((N,f))
+    xguess[:,0]=x_comp
+    xguess[:,1]=y_comp
+    pes.x0=xmin
+    x_opt=optimiser(xguess, pes, beta, N, gtol=1e-8)
+    
+    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(14, 5))
+    
+    # first, pes plot, direct copy from potentials.py
+    npts=50
+    x=np.linspace(-1.25, 1.25, npts)
+    y=np.linspace(-1.25, 1.25, npts)
+    V=np.empty((npts,npts))
+    for i in range(npts):
+        for j in range(npts):
+            V[i,j]=pes.potential(np.array([x[i], y[j]]))
 
+    # contour plot generation
+    #ax[0]=plt.gca()
+
+    X, Y=np.meshgrid(x, y)
+    CS=ax[0].contour(X, Y, V.T, np.linspace(0,2,10))
+    ax[0].set_xbound(-1.25,1.25)
+    ax[0].set_ybound(-1.25,1.25)
+    ax[0].plot(x_opt[:,0], x_opt[:,1], 'o-', ms=8) # plot instanton trajectory
+    ax[0].set_axis_off()
+    
+    # generate bar chart, values hard-coded for speed
+    ind=np.arange(5)
+    my_cmap = plt.get_cmap("viridis")
+    if b>=0.95e-9 and b<=1.05e-9:
+        theta_vals=[2.49e-8, 1.27e-7, 5.65e-6, 2.89e-5, 6.57e-7]
+        d_vals=[7.07e-11, 7.07e-11, 2.12e-10, 2.12e-10, 7.07e-11]
+        delta_inst=[4.98e-8, 2.55e-7, 1.13e-5, 5.78e-5, 1.31e-6]
+        delta_dvr=[4.58e-8, 2.28e-7, 7.82e-6, 3.55e-5, 1.21e-8]
+        
+    if b>=0.95e-7 and b<=1.05e-7:
+        theta_vals=[2.49e-8, 1.27e-7, 5.65e-6, 2.89e-5, 6.57e-7]
+        d_vals=[7.07e-9, 7.07e-9, 2.12e-8, 2.12e-8, 7.07e-9]
+        delta_inst=[5.18e-8, 2.56e-7, 1.13e-5, 5.78e-5, 1.31e-6]
+        delta_dvr=[4.77e-8, 2.28e-7, 7.82e-6, 3.55e-5, 1.21e-6]
+        
+    if b>=0.95e-5 and b<=1.05e-5:
+        theta_vals=[2.49e-8, 1.28e-7, 5.66e-6, 2.90e-5, 6.57e-7]
+        d_vals=[7.07e-7, 7.07e-7, 2.12e-6, 2.12e-6, 7.07e-7]
+        delta_inst=[1.42e-6, 1.44e-6, 1.21e-5, 5.81e-5, 1.93e-6]
+        delta_dvr=[1.33e-6, 1.38e-6, 8.59e-6, 3.56e-5, 1.95e-6]
+      
+    if b>=0.95e-3 and b<=1.05e-3:
+        theta_vals=[2.49e-8, 1.28e-7, 5.66e-6, 2.94e-5, 6.57e-7]
+        d_vals=[7.07e-5, 7.07e-5, 2.12e-4, 2.12e-4, 7.07e-5]
+        delta_inst=[1.41e-4, 1.41e-4, 4.24e-4, 4.28e-4, 1.41e-4]
+        delta_dvr=[1.33e-4, 1.36e-6, 3.56e-4, 3.43e-4, 1.52e-4]
+    
+        
+    
+    theta=ax[1].bar(ind, theta_vals, width=0.2, color=my_cmap.colors)
+    d=ax[1].bar(ind+0.2, d_vals, width=0.2, color=my_cmap.colors[63])
+    inst=ax[1].bar(ind+0.4, delta_inst, width=0.2, color=my_cmap.colors[127])
+    dvr=ax[1].bar(ind+0.6, delta_dvr, width=0.2, color=my_cmap.colors[191])
+    
+    ax[1].set_ylim(5e-11, 1e-3)
+    
+    plt.xticks(ind+0.3, [r'$(0,0)$', r'$(1,0)$', r'$(0,1)$', r'$(1,1)$', r'$(2,0)$'])
+    ax[1].set_xlabel(r'$(n_1, n_2)$')
+    ax[1].legend((theta[0], d[0], inst[0], dvr[0]), (r'$\hbar\Omega_{n_1, n_2}^\mathrm{inst}$', r'$d_{n_1, n_2}$', r'$\Delta_{n_1, n_2}^\mathrm{inst}$', r'$\Delta_{n_1, n_2}^\mathrm{exact}$'), loc='lower center', bbox_to_anchor=(0.5, -0.2), ncol=4)
+    ax[1].xaxis.set_label_coords(-0.05, -0.025)
+    ax[1].set_yscale('log')
+    
 ###############################################################################
 # tests go here
 if 0:
