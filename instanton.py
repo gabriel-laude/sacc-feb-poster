@@ -305,20 +305,36 @@ def plot_1d(N=32, beta=30, b=0, V0=2, bar_charts=False): # for now d does nothin
     #bar_charts=False
     if bar_charts: # bar charts
         ind=np.arange(3)
-        p1=ax[1].bar(ind, [theta0, theta1, theta2], width=0.2)
+        my_cmap = plt.get_cmap("viridis")
+        
+        #print(len(my_cmap.colors))
+        
+        p1=ax[1].bar(ind, [theta0, theta1, theta2], width=0.2, color=my_cmap.colors)
         #p2=plt.bar(ind, [2*np.sqrt(theta0**2 + d0**2), 2*np.sqrt(theta1**2 + d1**2), 2*np.sqrt(theta2**2 + d2**2)], width=0.2, bottom=[theta0, theta1, theta2])
-        p2=ax[1].bar(ind+0.4, [2*np.sqrt(theta0**2 + d0**2), 2*np.sqrt(theta1**2 + d1**2), 2*np.sqrt(theta2**2 + d2**2)], width=0.2)
-        d=ax[1].bar(ind+0.2, [d0, d1, d2], width=0.2)
-        ex=ax[1].bar(ind+0.6, [float(i) for i in data[:,-1]], width=0.2)
+        p2=ax[1].bar(ind+0.4, [2*np.sqrt(theta0**2 + d0**2), 2*np.sqrt(theta1**2 + d1**2), 2*np.sqrt(theta2**2 + d2**2)], width=0.2, color=my_cmap.colors[63])
+        d=ax[1].bar(ind+0.2, [d0, d1, d2], width=0.2, color=my_cmap.colors[127])
+        ex=ax[1].bar(ind+0.6, [float(i) for i in data[:,-1]], width=0.2, color=my_cmap.colors[191])
         ax[1].set_yscale('log')
         #plt.yscale('log')
         if V0 >= 2.95 and V0 <=3.05:
             ax[1].set_ylim(1e-14, 1e-6)
         if V0 >= 1.95 and V0 <=2.05:
-            ax[1].set_ylim(1e-10, 5e-3)
-        plt.xticks(ind+0.2/2, [r'$\Delta_0$', r'$\Delta_1$', r'$\Delta_2$'])
-        plt.legend((p1[0], d[0], p2[0], ex[0]), (r'$\hbar\Omega_n^\mathrm{inst}$', r'$d_n$', r'$\Delta_n^\mathrm{inst}$', r'$\Delta_n^\mathrm{exact}$'))
+            ax[1].set_ylim(1e-11, 5e-3)
+        plt.xticks(ind+0.3, [r'$n=0$', r'$n=1$', r'$n=2$'])
+        ax[1].legend((p1[0], d[0], p2[0], ex[0]), (r'$\hbar\Omega_n^\mathrm{inst}$', r'$d_n$', r'$\Delta_n^\mathrm{inst}$', r'$\Delta_n^\mathrm{exact}$'))
         
+        if 0:
+            from mpldatacursor import datacursor
+            def formatter(**kwargs):
+                dist = abs(np.array(x) - kwargs['x'])
+                i = dist.argmin()
+                return '\n'.join(attendance[i])
+
+            datacursor(hover=True, formatter=formatter)
+            
+        if 1:
+            import mplcursors
+            mplcursors.cursor(hover=True)
         #print(p1)
         #plt.show()
 
