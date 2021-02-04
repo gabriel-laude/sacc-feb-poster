@@ -339,7 +339,7 @@ def plot_1d(N, beta, b, V0, bar_charts=False): # for now d does nothing
             
             
             
-def plot_2d(N, beta, b=0): 
+def plot_2d(N, beta, b): 
     """
     Similar to plot_instanton, with one major exception: this only carries out an instanton optimisation!
     
