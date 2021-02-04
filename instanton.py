@@ -222,7 +222,7 @@ def plot_instanton(N, beta, b=0): # for now d does nothing
                     loc='right', bbox=[1.1, 0.0, 0.9, 1])
 
 
-def plot_1d(N=32, beta=30, b=0, V0=2): # for now d does nothing
+def plot_1d(N=32, beta=30, b=0, V0=2, bar_charts=False): # for now d does nothing
     from potentials import AsymDW
     x0=5*np.sqrt(V0)
     a_pass=b/x0**2
@@ -251,16 +251,13 @@ def plot_1d(N=32, beta=30, b=0, V0=2): # for now d does nothing
         x_opt=optimiser(xguess, pes, beta, N, f=1, gtol=1e-8)
     
     
-    if 1:
-        plt.plot(x_opt, pes.potential(x_opt), 'bo-')
-        plt.yticks(np.arange(0, V0+0.5, step=0.5))
-        plt.xlabel(r'$x$')
-        plt.ylabel(r'$V(x)$')
+    if 1: # activate for pes plot!!
+        fig, ax = plt.subplots(2, figsize=(7,10))
+        ax[0].plot(x_opt, pes.potential(x_opt), 'bo-')
+        ax[0].set_yticks(np.arange(0, V0+0.5, step=0.5))
+        ax[0].set_xlabel(r'$x$')
+        ax[0].set_ylabel(r'$V(x)$')
     
-    
-    if 0:
-        import nbinteract as nbi
-        nbi.scatter(x_opt, pes.potential(x_opt))
     theta0, theta1, theta2 = splitting(x_opt, x0, beta, pes, f=1)
     omega_l, omega_r = np.sqrt(pes.hessian(-pes.x0)), np.sqrt(pes.hessian(pes.x0)) 
     d0=1./4 * np.abs(omega_l - omega_r)
@@ -298,8 +295,34 @@ def plot_1d(N=32, beta=30, b=0, V0=2): # for now d does nothing
             data[:,-1] = ["2.75e-8", "7.76e-8", "1.97e-7"]
     
     
-    table=plt.table(colLabels=columns, cellText=data,
-                    loc='right', bbox=[1.1, 0.0, 0.9, 1])
+    if not bar_charts: 
+        table=ax[0].table(colLabels=columns, cellText=data,
+                        loc='right', bbox=[1.1, 0.0, 0.9, 1])
+        ax[1].set_axis_off()
+        
+    #print('length of axis: ', len(ax))
+    
+    #bar_charts=False
+    if bar_charts: # bar charts
+        ind=np.arange(3)
+        #print(data[0,-1])
+        plt.figure(figsize=(8,6))
+        p1=plt.bar(ind, [theta0, theta1, theta2], width=0.2)
+        #p2=plt.bar(ind, [2*np.sqrt(theta0**2 + d0**2), 2*np.sqrt(theta1**2 + d1**2), 2*np.sqrt(theta2**2 + d2**2)], width=0.2, bottom=[theta0, theta1, theta2])
+        p2=plt.bar(ind+0.4, [2*np.sqrt(theta0**2 + d0**2), 2*np.sqrt(theta1**2 + d1**2), 2*np.sqrt(theta2**2 + d2**2)], width=0.2)
+        d=plt.bar(ind+0.2, [d0, d1, d2], width=0.2)
+        ex=plt.bar(ind+0.6, [float(i) for i in data[:,-1]], width=0.2)
+        #plt.set_yscale('log')
+        plt.yscale('log')
+        if V0 >= 2.95 and V0 <=3.05:
+            plt.ylim(1e-14, 1e-6)
+        if V0 >= 1.95 and V0 <=2.05:
+            plt.ylim(1e-10, 5e-3)
+        plt.xticks(ind+0.2/2, [r'$\Delta_0$', r'$\Delta_1$', r'$\Delta_2$'])
+        plt.legend((p1[0], d[0], p2[0], ex[0]), (r'$\hbar\Omega_n^\mathrm{inst}$', r'$d_n$', r'$\Delta_n^\mathrm{inst}$', r'$\Delta_n^\mathrm{exact}$'))
+        
+        #print(p1)
+        #plt.show()
 
 
 ###############################################################################
