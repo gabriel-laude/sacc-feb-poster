@@ -35,7 +35,7 @@ def splitting(x_opt, xmin, beta, pes, vib_ind=[0,0], f=2):
     tau=np.linspace(0, beta*pes.hbar, int(N))
     V, dVdx, d2Vdx2 = information(x_opt, pes, f=f)
     traj=path_integral.adiabatic(pes, 1, f=f)
-    print('S/ħ: ', traj.S(x_opt, tau[-1]) / pes.hbar)
+    # print('S/ħ: ', traj.S(x_opt, tau[-1]) / pes.hbar)
     
     # minima 
     if f == 2:
@@ -250,8 +250,7 @@ def plot_1d(N=32, beta=30, b=0, V0=2, bar_charts=False): # for now d does nothin
     else:
         x_opt=optimiser(xguess, pes, beta, N, f=1, gtol=1e-8)
     
-    
-    if 1: # activate for pes plot!!
+    if bar_charts is False: # activate for pes plot!!
         fig, ax = plt.subplots(ncols=2, figsize=(14,5))
         ax[0].plot(x_opt, pes.potential(x_opt), 'bo-')
         ax[0].set_yticks(np.arange(0, V0+0.5, step=0.5))
@@ -270,7 +269,7 @@ def plot_1d(N=32, beta=30, b=0, V0=2, bar_charts=False): # for now d does nothin
     data = [['0', "{:.2e}".format(d0), "{:.2e}".format(theta0), "{:.2e}".format(2*np.sqrt(theta0**2 + d0**2)), 'tbd'],
             ['1', "{:.2e}".format(d1), "{:.2e}".format(theta1), "{:.2e}".format(2*np.sqrt(theta1**2 + d1**2)), 'tbd'],
             ['2', "{:.2e}".format(d2), "{:.2e}".format(theta2), "{:.2e}".format(2*np.sqrt(theta2**2 + d2**2)), 'tbd']]
-    columns=[r'$n$', r'$d_n$', r'$\hbar\Omega_{n}^\mathrm{inst}$', r'$\Delta_{n}^\mathrm{inst}$', r'$\Delta^\mathrm{DVR}_{n}$' ]
+    columns=[r'$n$', r'$d_n$', r'$\hbar\Omega_{n}^\mathrm{inst}$', r'$\Delta_{n}^\mathrm{inst}$', r'$\Delta^\mathrm{exact}_{n}$' ]
     data=np.array(data)
     
     # hard code DVR data
@@ -281,7 +280,7 @@ def plot_1d(N=32, beta=30, b=0, V0=2, bar_charts=False): # for now d does nothin
             data[:,-1]=["4.15e-8", "7.40e-6", "5.14e-4"] 
         if b<=1.05e-7 and b>=0.95e-7:
             data[:,-1]=["4.95e-8", "7.40e-6", "5.14e-4"]
-        if b<=1.05e-5 and b>=0.95e-7:
+        if b<=1.05e-5 and b>=0.95e-5:
             data[:,-1]=["2.70e-6", "1.04e-5", "5.14e-4"]
             
     if V0==3:
@@ -295,49 +294,42 @@ def plot_1d(N=32, beta=30, b=0, V0=2, bar_charts=False): # for now d does nothin
             data[:,-1] = ["2.75e-8", "7.76e-8", "1.97e-7"]
     
     
-    if not bar_charts: 
+    if bar_charts is False: 
         table=ax[0].table(colLabels=columns, cellText=data,
-                        loc='right', bbox=[1.1, 0.0, 0.9, 1])
+                    loc='right', bbox=[1.1, 0.0, 0.9, 1])
         ax[1].set_axis_off()
         
-    #print('length of axis: ', len(ax))
+        # plot bar chart and table together
+        #else:
+        #    ax[0].set_axis_off()
+        #    table=ax[0].table(colLabels=columns, cellText=data,
+        #                loc='left', bbox=[0.1, 0.0, 0.9, 1])
+        
     
-    #bar_charts=False
-    if bar_charts: # bar charts
+    if bar_charts: # bar charts, now plot this without anything else!
         ind=np.arange(3)
         my_cmap = plt.get_cmap("viridis")
-        
+        fig, ax = plt.subplots(ncols=1, figsize=(7,5))
+                               
         #print(len(my_cmap.colors))
         
-        p1=ax[1].bar(ind, [theta0, theta1, theta2], width=0.2, color=my_cmap.colors)
-        #p2=plt.bar(ind, [2*np.sqrt(theta0**2 + d0**2), 2*np.sqrt(theta1**2 + d1**2), 2*np.sqrt(theta2**2 + d2**2)], width=0.2, bottom=[theta0, theta1, theta2])
-        p2=ax[1].bar(ind+0.4, [2*np.sqrt(theta0**2 + d0**2), 2*np.sqrt(theta1**2 + d1**2), 2*np.sqrt(theta2**2 + d2**2)], width=0.2, color=my_cmap.colors[63])
-        d=ax[1].bar(ind+0.2, [d0, d1, d2], width=0.2, color=my_cmap.colors[127])
-        ex=ax[1].bar(ind+0.6, [float(i) for i in data[:,-1]], width=0.2, color=my_cmap.colors[191])
-        ax[1].set_yscale('log')
-        #plt.yscale('log')
-        if V0 >= 2.95 and V0 <=3.05:
-            ax[1].set_ylim(1e-14, 1e-6)
-        if V0 >= 1.95 and V0 <=2.05:
-            ax[1].set_ylim(1e-11, 5e-3)
-        plt.xticks(ind+0.3, [r'$n=0$', r'$n=1$', r'$n=2$'])
-        ax[1].legend((p1[0], d[0], p2[0], ex[0]), (r'$\hbar\Omega_n^\mathrm{inst}$', r'$d_n$', r'$\Delta_n^\mathrm{inst}$', r'$\Delta_n^\mathrm{exact}$'))
         
+        p1=ax.bar(ind, [theta0, theta1, theta2], width=0.2, color=my_cmap.colors)
+        p2=ax.bar(ind+0.4, [2*np.sqrt(theta0**2 + d0**2), 2*np.sqrt(theta1**2 + d1**2), 2*np.sqrt(theta2**2 + d2**2)], width=0.2, color=my_cmap.colors[63])
+        d=ax.bar(ind+0.2, [d0, d1, d2], width=0.2, color=my_cmap.colors[127])
+        ex=ax.bar(ind+0.6, [float(i) for i in data[:,-1]], width=0.2, color=my_cmap.colors[191])
+        ax.set_yscale('log')
+        if V0 >= 2.95 and V0 <=3.05:
+            ax.set_ylim(1e-14, 1e-6)
+        if V0 >= 1.95 and V0 <=2.05:
+            ax.set_ylim(1e-12, 5e-3)
+        plt.xticks(ind+0.3, [r'$n=0$', r'$n=1$', r'$n=2$'])
+        ax.legend((p1[0], d[0], p2[0], ex[0]), (r'$\hbar\Omega_n^\mathrm{inst}$', r'$d_n$', r'$\Delta_n^\mathrm{inst}$', r'$\Delta_n^\mathrm{exact}$'), loc='lower center', bbox_to_anchor=(0.5, -0.25), ncol=4)
+       
+        #plt.rcParams.update({'font.size': 22})
         if 0:
-            from mpldatacursor import datacursor
-            def formatter(**kwargs):
-                dist = abs(np.array(x) - kwargs['x'])
-                i = dist.argmin()
-                return '\n'.join(attendance[i])
-
-            datacursor(hover=True, formatter=formatter)
-            
-        if 1:
             import mplcursors
-            mplcursors.cursor(hover=True)
-        #print(p1)
-        #plt.show()
-
+            mplcursors.cursor((p1, p2, d, ex), hover=True)
 
 ###############################################################################
 # tests go here
