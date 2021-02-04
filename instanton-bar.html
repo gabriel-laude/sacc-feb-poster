@@ -3,7 +3,7 @@
 <head><meta charset="utf-8" />
 
 
-<title>instanton1d-bar</title>
+<title>instanton-bar</title>
 
 <style type="text/css">
     /*!
@@ -13123,42 +13123,13 @@ div#notebook {
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># nbi:hide_in</span>
 <span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">interact</span><span class="p">,</span> <span class="n">interactive</span><span class="p">,</span> <span class="n">fixed</span><span class="p">,</span> <span class="n">interact_manual</span>
-<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span>
 <span class="kn">import</span> <span class="nn">ipywidgets</span> <span class="k">as</span> <span class="nn">widgets</span>
-<span class="kn">from</span> <span class="nn">instanton</span> <span class="kn">import</span> <span class="n">plot_1d</span>
-
-<span class="k">def</span> <span class="nf">update_x</span><span class="p">(</span><span class="n">V0</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">V0</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">V0</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span>
-        <span class="n">b_slider</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">FloatLogSlider</span><span class="p">(</span><span class="nb">min</span><span class="o">=-</span><span class="mi">13</span><span class="p">,</span> <span class="nb">max</span><span class="o">=-</span><span class="mi">7</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">1e-13</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$b$&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">V0</span><span class="o">==</span><span class="mf">2.5</span><span class="p">:</span>
-        <span class="n">b_slider</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">FloatLogSlider</span><span class="p">(</span><span class="nb">min</span><span class="o">=-</span><span class="mi">12</span><span class="p">,</span> <span class="nb">max</span><span class="o">=-</span><span class="mi">6</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$b$&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">V0</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
-        <span class="n">b_slider</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">FloatLogSlider</span><span class="p">(</span><span class="nb">min</span><span class="o">=-</span><span class="mi">11</span><span class="p">,</span> <span class="nb">max</span><span class="o">=-</span><span class="mi">5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">1e-11</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$b$&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">b_slider</span>
-
-
-<span class="n">V0_widget</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">Dropdown</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">value</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$V_0$&#39;</span><span class="p">)</span>
-<span class="n">b_slider</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">FloatLogSlider</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$b$&#39;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">1e-13</span><span class="p">,</span> <span class="nb">min</span><span class="o">=-</span><span class="mi">13</span><span class="p">,</span> <span class="nb">max</span><span class="o">=-</span><span class="mi">7</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">V0_widget</span><span class="o">.</span><span class="n">value</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span>
-        <span class="n">b_slider</span><span class="o">.</span><span class="n">min</span><span class="o">=-</span><span class="mi">13</span>
-        <span class="n">b_slider</span><span class="o">.</span><span class="n">max</span><span class="o">=-</span><span class="mi">7</span>
-        <span class="n">b_slider</span><span class="o">.</span><span class="n">value</span><span class="o">=</span><span class="mf">1e-13</span>
-        
-    <span class="k">if</span> <span class="n">V0_widget</span><span class="o">.</span><span class="n">value</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
-        <span class="n">b_slider</span><span class="o">.</span><span class="n">min</span><span class="o">=-</span><span class="mi">11</span>
-        <span class="n">b_slider</span><span class="o">.</span><span class="n">max</span><span class="o">=-</span><span class="mi">5</span>
-        <span class="n">b_slider</span><span class="o">.</span><span class="n">value</span><span class="o">=</span><span class="mf">1e-11</span>
-    
-<span class="n">V0_widget</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">update</span><span class="p">)</span>
-
-<span class="n">interact</span><span class="p">(</span><span class="n">plot_1d</span><span class="p">,</span> 
-         <span class="n">beta</span><span class="o">=</span><span class="n">fixed</span><span class="p">(</span><span class="mi">30</span><span class="p">),</span>
-         <span class="n">N</span><span class="o">=</span><span class="n">fixed</span><span class="p">(</span><span class="mi">128</span><span class="p">),</span> 
-         <span class="n">V0</span><span class="o">=</span><span class="n">V0_widget</span><span class="p">,</span>
-         <span class="n">b</span><span class="o">=</span><span class="n">b_slider</span><span class="p">,</span>
-         <span class="n">bar_charts</span><span class="o">=</span><span class="n">fixed</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+<span class="kn">from</span> <span class="nn">instanton</span> <span class="kn">import</span> <span class="n">plot_2d</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="n">interact</span><span class="p">(</span><span class="n">plot_2d</span><span class="p">,</span> 
+         <span class="n">beta</span><span class="o">=</span><span class="n">fixed</span><span class="p">(</span><span class="mi">60</span><span class="p">),</span>
+         <span class="n">N</span><span class="o">=</span><span class="n">fixed</span><span class="p">(</span><span class="mi">64</span><span class="p">),</span>
+         <span class="n">b</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">FloatLogSlider</span><span class="p">(</span><span class="nb">min</span><span class="o">=-</span><span class="mi">9</span><span class="p">,</span> <span class="nb">max</span><span class="o">=-</span><span class="mi">3</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$b$&#39;</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -13190,7 +13161,7 @@ div#notebook {
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;function instanton.plot_1d(N=32, beta=30, b=0, V0=2, bar_charts=False)&gt;</pre>
+<pre>&lt;function instanton.plot_2d(N, beta, b=0)&gt;</pre>
 </div>
 
 </div>
