@@ -252,7 +252,7 @@ def plot_1d(N=32, beta=30, b=0, V0=2, bar_charts=False): # for now d does nothin
     
     
     if 1: # activate for pes plot!!
-        fig, ax = plt.subplots(2, figsize=(7,10))
+        fig, ax = plt.subplots(ncols=2, figsize=(14,5))
         ax[0].plot(x_opt, pes.potential(x_opt), 'bo-')
         ax[0].set_yticks(np.arange(0, V0+0.5, step=0.5))
         ax[0].set_xlabel(r'$x$')
@@ -305,19 +305,17 @@ def plot_1d(N=32, beta=30, b=0, V0=2, bar_charts=False): # for now d does nothin
     #bar_charts=False
     if bar_charts: # bar charts
         ind=np.arange(3)
-        #print(data[0,-1])
-        plt.figure(figsize=(8,6))
-        p1=plt.bar(ind, [theta0, theta1, theta2], width=0.2)
+        p1=ax[1].bar(ind, [theta0, theta1, theta2], width=0.2)
         #p2=plt.bar(ind, [2*np.sqrt(theta0**2 + d0**2), 2*np.sqrt(theta1**2 + d1**2), 2*np.sqrt(theta2**2 + d2**2)], width=0.2, bottom=[theta0, theta1, theta2])
-        p2=plt.bar(ind+0.4, [2*np.sqrt(theta0**2 + d0**2), 2*np.sqrt(theta1**2 + d1**2), 2*np.sqrt(theta2**2 + d2**2)], width=0.2)
-        d=plt.bar(ind+0.2, [d0, d1, d2], width=0.2)
-        ex=plt.bar(ind+0.6, [float(i) for i in data[:,-1]], width=0.2)
-        #plt.set_yscale('log')
-        plt.yscale('log')
+        p2=ax[1].bar(ind+0.4, [2*np.sqrt(theta0**2 + d0**2), 2*np.sqrt(theta1**2 + d1**2), 2*np.sqrt(theta2**2 + d2**2)], width=0.2)
+        d=ax[1].bar(ind+0.2, [d0, d1, d2], width=0.2)
+        ex=ax[1].bar(ind+0.6, [float(i) for i in data[:,-1]], width=0.2)
+        ax[1].set_yscale('log')
+        #plt.yscale('log')
         if V0 >= 2.95 and V0 <=3.05:
-            plt.ylim(1e-14, 1e-6)
+            ax[1].set_ylim(1e-14, 1e-6)
         if V0 >= 1.95 and V0 <=2.05:
-            plt.ylim(1e-10, 5e-3)
+            ax[1].set_ylim(1e-10, 5e-3)
         plt.xticks(ind+0.2/2, [r'$\Delta_0$', r'$\Delta_1$', r'$\Delta_2$'])
         plt.legend((p1[0], d[0], p2[0], ex[0]), (r'$\hbar\Omega_n^\mathrm{inst}$', r'$d_n$', r'$\Delta_n^\mathrm{inst}$', r'$\Delta_n^\mathrm{exact}$'))
         
