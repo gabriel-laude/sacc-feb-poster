@@ -1,0 +1,1 @@
+<iframe src="https://slides.com/gabriel_laude/sacc-poster/embed?style=hidden&byline=hidden&share=hidden" width="1280" height="720" scrolling="no" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
