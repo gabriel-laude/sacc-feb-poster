@@ -149,7 +149,7 @@ def splitting(x_opt, xmin, beta, pes, vib_ind=[0,0], f=2):
 
 
 
-def plot_instanton(N, beta, b=0): 
+def plot_instanton(N, beta, b): 
     """
     Full optimisation for a 2D case.
     """
@@ -227,7 +227,7 @@ def plot_instanton(N, beta, b=0):
                     loc='right', bbox=[1.1, 0.0, 0.9, 1])
 
 
-def plot_1d(N=32, beta=30, b=0, V0=2, bar_charts=False): # for now d does nothing
+def plot_1d(N, beta, b, V0, bar_charts=False): # for now d does nothing
     from potentials import AsymDW
     x0=5*np.sqrt(V0)
     a_pass=b/x0**2
