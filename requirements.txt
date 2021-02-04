@@ -2,5 +2,3 @@ nbinteract
 numpy
 scipy
 matplotlib
-mplcursors
-ipympl
