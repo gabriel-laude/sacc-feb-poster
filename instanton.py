@@ -388,9 +388,9 @@ def plot_2d(N, beta, b):
     ind=np.arange(5)
     my_cmap = plt.get_cmap("viridis")
     if b>=0.95e-9 and b<=1.05e-9:
-        theta_vals=[2.49e-8, 1.27e-7, 5.65e-6, 2.89e-5, 6.57e-7]
+        theta_vals=[2.49e-8, 1.27e-7, 5.65e-6, 2.89e-5, 6.57e-9]
         d_vals=[7.07e-11, 7.07e-11, 2.12e-10, 2.12e-10, 7.07e-11]
-        delta_inst=[4.98e-8, 2.55e-7, 1.13e-5, 5.78e-5, 1.31e-6]
+        delta_inst=[4.98e-8, 2.55e-7, 1.13e-5, 5.78e-5, 1.31e-8]
         delta_dvr=[4.58e-8, 2.28e-7, 7.82e-6, 3.55e-5, 1.21e-8]
         
     if b>=0.95e-7 and b<=1.05e-7:
